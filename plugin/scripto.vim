@@ -1,3 +1,0 @@
-echo "Scripto is running"
-
-

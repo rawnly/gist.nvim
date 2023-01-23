@@ -1,6 +1,8 @@
 local bufn = -1
 local output_bufn = -1
 
+local M = {}
+
 print("HELLO WORLD FROM SCRIPTO")
 
 local function open_buffer()
@@ -19,7 +21,7 @@ local function show_output(output)
 	end
 end
 
-local function start_playground()
+M.start = function()
 	open_buffer()
 end
 
@@ -28,20 +30,10 @@ local function get_content()
 	return table.concat(content, "\n")
 end
 
-local function evaluate()
+M.run = function()
 	local content = get_content()
 	local output = vim.api.nvim_exec("osascript -e " + content, true)
 	show_output(output)
 end
 
-vim.api.nvim_create_user_command("ScriptoOpen", start_playground, {
-	bang = true,
-	desc = "spawn a new playground",
-})
-
-vim.api.nvim_create_user_command("ScriptoRun", evaluate, {
-	bang = true,
-	desc = "spawn a new playground",
-})
-
-return {}
+return M

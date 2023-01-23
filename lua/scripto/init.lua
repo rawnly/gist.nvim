@@ -32,12 +32,12 @@ local function evaluate()
 	show_output(output)
 end
 
-vim.api.nvim_create_user_command("OPlaygroundOpen", start_playground, {
+vim.api.nvim_create_user_command("ScriptoOpen", start_playground, {
 	bang = true,
 	desc = "spawn a new playground",
 })
 
-vim.api.nvim_create_user_command("OPlaygroundRun", evaluate, {
+vim.api.nvim_create_user_command("ScriptoRun", evaluate, {
 	bang = true,
 	desc = "spawn a new playground",
 })

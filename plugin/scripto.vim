@@ -1,3 +1,3 @@
-echo "osascript-playground is running"
+echo "Scripto is running"
 
 

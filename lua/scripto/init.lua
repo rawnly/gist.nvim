@@ -1,6 +1,8 @@
 local bufn = -1
 local output_bufn = -1
 
+print("HELLO WORLD FROM SCRIPTO")
+
 local function open_buffer()
 	if bufn == -1 then
 		vim.api.nvim_command("botright vnew")

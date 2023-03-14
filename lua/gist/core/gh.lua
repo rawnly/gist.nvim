@@ -41,8 +41,10 @@ end
 --- Reads the configuration from the user's vimrc
 -- @treturn table A table with the configuration properties
 function M.read_config()
-	local is_private = vim.api.nvim_get_var("gist_is_private") or false
-	local clipboard = vim.api.nvim_get_var("gist_clipboard") or "+"
+	local ok, values = pcall(vim.api.nvim_get_var, { "gist_is_private", "gist_clipboard" })
+
+	local is_private = ok and values[1] or false
+	local clipboard = ok and values[2] or "xsel"
 
 	local config = {
 		is_private = is_private,

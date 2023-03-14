@@ -1,0 +1,26 @@
+*gist.txt*  CreateGist plugin
+
+NAME
+    gist - Create a GitHub Gist from the current file
+
+SYNOPSIS
+    :CreateGist
+
+DESCRIPTION
+    The `:CreateGist` command creates a GitHub Gist from the current file using the `gh` command-line tool. The plugin prompts you for a description and privacy settings for the Gist, and then copies the URL of the created Gist to the system clipboard.
+
+OPTIONS
+    None
+
+EXAMPLES
+    To create a Gist from the current file, run the following command in Neovim:
+
+        :CreateGist
+
+    The plugin will prompt you for a description and privacy settings for the Gist. After you enter the description and privacy settings, the plugin will create the Gist using the `gh` command-line tool and copy the URL of the created Gist to the system clipboard.
+
+SEE ALSO
+    :help gist.config
+
+AUTHOR
+    Federico Vitale <mail@fedevitale.dev>

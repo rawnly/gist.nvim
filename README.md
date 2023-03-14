@@ -1,14 +1,14 @@
-# CreateGist.nvim
+# gist.nvim
 
-CreateGist.nvim is a Neovim plugin that allows you to create a GitHub Gist from the current file.
+`gist.nvim` is a Neovim plugin that allows you to create a GitHub Gist from the current file.
 The plugin uses the gh command-line tool to create the Gist and provides a simple interface for specifying the Gist's description and privacy settings.
 
 ## Installation
 
-To use CreateGist.nvim, you need to have Neovim installed on your system.
+To use `gist.nvim`, you need to have Neovim installed on your system.
 You also need to have the gh command-line tool installed and configured with your GitHub account.
 
-Once you have Neovim and gh installed, you can install CreateGist.nvim using your favorite plugin manager.
+Once you have Neovim and gh installed, you can install `gist.nvim` using your favorite plugin manager.
 For example, if you are using vim-plug, you can add the following line to your init.vim file:
 
 ```

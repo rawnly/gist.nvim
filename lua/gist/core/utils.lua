@@ -12,7 +12,7 @@ function M.get_current_selection(start_line, end_line)
 	local bufnr = vim.api.nvim_get_current_buf()
 
 	start_line = start_line - 1 -- Convert to 0-based line number
-	end_line = end_line - 1 -- Convert to 0-based line number
+	end_line = end_line - 1    -- Convert to 0-based line number
 
 	local lines = vim.api.nvim_buf_get_lines(bufnr, start_line, end_line + 1, false)
 
@@ -77,6 +77,19 @@ function M.extract_gist_url(output)
 	local pattern = "https://gist.github.com/%S+"
 
 	return output:match(pattern)
+end
+
+-- @param args string
+function M.parseArgs(args)
+	-- parse args as key=value
+	local parsed = {}
+
+	for _, arg in ipairs(vim.split(args, " ", {})) do
+		local key, value = unpack(vim.split(arg, "=", { plain = true }))
+		parsed[key] = value
+	end
+
+	return parsed
 end
 
 return M

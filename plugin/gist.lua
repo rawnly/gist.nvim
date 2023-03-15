@@ -1,5 +1,4 @@
 local gist = require("gist")
-local utils = require("gist.core.utils")
 
 vim.api.nvim_create_user_command("CreateGistFromFile", gist.create_from_file, {
 	nargs = "?",

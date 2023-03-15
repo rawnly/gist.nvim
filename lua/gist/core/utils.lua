@@ -86,6 +86,13 @@ function M.parseArgs(args)
 
 	for _, arg in ipairs(vim.split(args, " ", {})) do
 		local key, value = unpack(vim.split(arg, "=", { plain = true }))
+
+		if value == "true" then
+			value = true
+		elseif value == "false" then
+			value = false
+		end
+
 		parsed[key] = value
 	end
 

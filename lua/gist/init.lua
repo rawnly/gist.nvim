@@ -3,12 +3,19 @@ local core = require("gist.core.gh")
 
 local M = {}
 
-local function get_details(default_description)
+local function get_details(ctx)
 	local config = core.read_config()
 
 	local filename = vim.fn.expand("%:t")
-	local description = default_description or vim.fn.input("Gist description: ")
-	local is_private = config.is_private or vim.fn.input("Create a private Gist? (y/n): ") == "y"
+	local description = ctx.description or vim.fn.input("Gist description: ")
+
+	local is_private
+
+	if ctx.public ~= nil then
+		is_private = not ctx.public
+	else
+		is_private = config.public or vim.fn.input("Create a private Gist? (y/n): ") == "y"
+	end
 
 	return {
 		filename = filename,
@@ -17,9 +24,9 @@ local function get_details(default_description)
 	}
 end
 
-local function create(content, desc)
+local function create(content, ctx)
 	local config = core.read_config()
-	local details = get_details(desc)
+	local details = get_details(ctx)
 
 	local url, err = core.create_gist(details.filename, content, details.description, details.is_private)
 
@@ -34,6 +41,7 @@ end
 --- Creates a Gist from the current selection
 function M.create(opts)
 	local content = nil
+	local args = utils.parseArgs(opts.args)
 
 	local start_line = opts.line1
 	local end_line = opts.line2
@@ -43,14 +51,21 @@ function M.create(opts)
 		content = utils.get_current_selection(start_line, end_line)
 	end
 
-	return create(content, description)
+	return create(content, {
+		description = description,
+		public = args.public,
+	})
 end
 
 --- Creates a Gist from the current file.
 function M.create_from_file(opts)
+	local args = utils.parseArgs(opts.args)
 	local description = opts.fargs[1]
 
-	create(nil, description)
+	create(nil, {
+		description = description,
+		public = args.public,
+	})
 end
 
 return M

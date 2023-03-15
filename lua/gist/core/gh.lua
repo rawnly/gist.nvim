@@ -1,3 +1,4 @@
+local utils = require("gist.core.utils")
 local M = {}
 
 --- Creates a Github gist with the specified filename and description
@@ -10,36 +11,37 @@ local M = {}
 -- @return number|nil The error of the command
 function M.create_gist(filename, content, description, private)
 	local public_flag = private and "" or "--public"
-	local escaped_description = vim.fn.shellescape(description)
+	description = vim.fn.shellescape(description)
 
-	local cmd = string.format(
-		"gh gist create %s %s --filename %s -d %s",
-		vim.fn.expand("%"),
-		public_flag,
-		filename,
-		escaped_description
-	)
+	local cmd
 
-	local handle = io.popen(cmd)
-
-	-- null check on handle
-	if handle == nil then
-		return nil
+	if content ~= nil then
+		filename = vim.fn.shellescape(filename)
+		cmd = string.format("gh gist create -f %s -d %s %s", filename, description, public_flag)
+	else
+		-- expand filepath if no content is provided
+		cmd = string.format(
+			"gh gist create %s %s --filename %s -d %s",
+			vim.fn.expand("%"),
+			public_flag,
+			filename,
+			description
+		)
 	end
 
-	local output = handle:read("*a")
-	handle:close()
+	local output = utils.exec(cmd, content)
 
 	if vim.v.shell_error ~= 0 then
 		return output, vim.v.shell_error
 	end
 
-	local url = string.gsub(output, "\n", "")
+	local url = utils.extract_gist_url(output)
 
 	return url, nil
 end
 
 --- Reads the configuration from the user's vimrc
+--
 -- @return table A table with the configuration properties
 function M.read_config()
 	local ok, values = pcall(vim.api.nvim_get_var, { "gist_is_private", "gist_clipboard" })

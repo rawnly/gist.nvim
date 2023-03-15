@@ -11,7 +11,7 @@ You also need to have the gh command-line tool installed and configured with you
 Once you have Neovim and gh installed, you can install `gist.nvim` using your favorite plugin manager.
 For example, if you are using packer, you can add the following line to your init.vim file:
 
-```
+```lua
   use "rawnly/gist.nvim"
 ```
 
@@ -21,11 +21,18 @@ To create a Gist from the current file, use the `:CreateGist` command in Neovim.
 The plugin will prompt you for a description and whether the Gist should be private or public.
 
 ```vim
-:CreateGist
+  :CreateGist [description] [public=true]
 ```
 
-After you enter the description and privacy settings, the plugin will create the Gist using the gh command-line tool and copy the Gist's URL to the system clipboard.
-You can then paste the URL into a browser to view the Gist.
+- `:CreateGist` will create the gist from the current selection
+- `:CreateGistFromFile` will create the gist from the current file
+
+Both the commands accept the same options which are `[description=]` and `[public=true]`
+
+If you don't pass the `description` it will prompt to insert one later.
+If you pass `[public=true]` it won't prompt for privacy later.
+
+After you enter the description and privacy settings, the plugin will create the Gist using the gh command-line tool and copy the Gist's URL to the given clipboard registry.
 
 ## Configuration
 

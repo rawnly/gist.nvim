@@ -39,7 +39,7 @@ function M.create_gist(filename, description, private)
 end
 
 --- Reads the configuration from the user's vimrc
--- @treturn table A table with the configuration properties
+-- @return table A table with the configuration properties
 function M.read_config()
 	local ok, values = pcall(vim.api.nvim_get_var, { "gist_is_private", "gist_clipboard" })
 

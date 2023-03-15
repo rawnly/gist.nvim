@@ -44,7 +44,7 @@ function M.read_config()
 	local ok, values = pcall(vim.api.nvim_get_var, { "gist_is_private", "gist_clipboard" })
 
 	local is_private = ok and values[1] or false
-	local clipboard = ok and values[2] or "xsel"
+	local clipboard = ok and values[2] or "+"
 
 	local config = {
 		is_private = is_private,

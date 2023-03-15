@@ -9,7 +9,7 @@ To use `gist.nvim`, you need to have Neovim installed on your system.
 You also need to have the gh command-line tool installed and configured with your GitHub account.
 
 Once you have Neovim and gh installed, you can install `gist.nvim` using your favorite plugin manager.
-For example, if you are using vim-plug, you can add the following line to your init.vim file:
+For example, if you are using packer, you can add the following line to your init.vim file:
 
 ```
   use "rawnly/gist.nvim"

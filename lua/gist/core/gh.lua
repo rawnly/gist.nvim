@@ -3,11 +3,12 @@ local M = {}
 --- Creates a Github gist with the specified filename and description
 --
 -- @param filename string The filename of the Gist
+-- @param content string|nil The content of the Gist
 -- @param description string The description of the Gist
 -- @param private boolean Wether the Gist should be private
 -- @return string|nil The URL of the created Gist
 -- @return number|nil The error of the command
-function M.create_gist(filename, description, private)
+function M.create_gist(filename, content, description, private)
 	local public_flag = private and "" or "--public"
 	local escaped_description = vim.fn.shellescape(description)
 
@@ -44,7 +45,7 @@ function M.read_config()
 	local ok, values = pcall(vim.api.nvim_get_var, { "gist_is_private", "gist_clipboard" })
 
 	local is_private = ok and values[1] or false
-	local clipboard = ok and values[2] or "xsel"
+	local clipboard = ok and values[2] or "+"
 
 	local config = {
 		is_private = is_private,

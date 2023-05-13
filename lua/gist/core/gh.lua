@@ -29,6 +29,13 @@ function M.create_gist(filename, content, description, private)
 		)
 	end
 
+	local ans = vim.fn.input("Do you want to create gist " .. filename .. " (y/n)? ")
+	if ans ~= "y" then
+		vim.cmd.redraw()
+		vim.notify("Gist creation aborted", vim.log.levels.INFO)
+		return
+	end
+
 	local output = utils.exec(cmd, content)
 
 	if vim.v.shell_error ~= 0 then

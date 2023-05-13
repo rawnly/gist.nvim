@@ -29,6 +29,7 @@ local function create(content, ctx)
 	local details = get_details(ctx)
 
 	local url, err = core.create_gist(details.filename, content, details.description, details.is_private)
+	if not url then return end
 
 	if err ~= nil then
 		vim.api.nvim_err_writeln("Error creating Gist: " .. err)

@@ -47,6 +47,34 @@ function M.create_gist(filename, content, description, private)
 	return url, nil
 end
 
+--- List all Github gists
+--
+-- @return [string]|nil The URLs of all the Gists
+function M.list_gists()
+	local cmd = "gh gist list"
+
+	local output = utils.exec(cmd)
+	if type(output) == "string" then
+		local list = {}
+
+		local gists = vim.split(output, "\n")
+		table.remove(gists, #gists)
+
+		for _, gist in ipairs(gists) do
+			local g = vim.split(gist, "\t")
+
+			table.insert(list, {
+				hash = g[1],
+				name = g[2],
+				files = tonumber(g[3]:sub(1,1)),
+				privacy = g[4],
+				date = g[5]
+			})
+		end
+		return list
+	end
+end
+
 --- Reads the configuration from the user's vimrc
 --
 -- @return table A table with the configuration properties

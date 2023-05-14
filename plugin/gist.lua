@@ -11,3 +11,7 @@ vim.api.nvim_create_user_command("CreateGist", gist.create, {
 	desc = "Create a Gist from the current selection.",
 	range = true,
 })
+
+vim.api.nvim_create_user_command("ListGists", gist.list_gists, {
+	desc = "List user Gists.",
+})

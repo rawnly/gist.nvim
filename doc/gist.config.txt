@@ -1,7 +1,7 @@
 *gist.config.txt*  CreateGist configuration
 
 DESCRIPTION
-    The `:CreateGist` command can be configured to avoid prompting the user for the privacy settings of the Gist and target clipboard. 
+    The `:CreateGist` command can be configured to avoid prompting the user for the privacy settings of the Gist and target clipboard.
     This is done by setting the `gist_clipboard` and `gist_privacy` variables in your `init.vim` file.
 
 OPTIONS

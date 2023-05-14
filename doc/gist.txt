@@ -8,8 +8,8 @@ SYNOPSIS
     :CreateGistFromFile
 
 DESCRIPTION
-    The `:CreateGist` command creates a GitHub Gist from the buffer selection using the `gh` command-line tool. 
-    The `:CreateGistFile` command creates a GitHub Gist from the current file using the `gh` command-line tool. 
+    The `:CreateGist` command creates a GitHub Gist from the buffer selection using the `gh` command-line tool.
+    The `:CreateGistFile` command creates a GitHub Gist from the current file using the `gh` command-line tool.
 
     The plugin prompts you for a description and privacy settings for the Gist, and then copies the URL of the created Gist to the system clipboard.
 
@@ -22,8 +22,8 @@ EXAMPLES
 
         :CreateGistFile [description] [public=true]
 
-    The plugin will prompt you for a description and privacy settings for the Gist. 
-    After you enter the description and privacy settings, the plugin will create the Gist using the `gh` command-line tool and copy the URL of the created Gist to the system clipboard.
+    The plugin will prompt you for a description and privacy settings for the Gist.
+    After you enter the description and privacy settings, the plugin will ask for confirmation and create the Gist using the `gh` command-line tool and copy the URL of the created Gist to the system clipboard.
 
     To Create a Gist from current selection, run the following command in Neovim:
 

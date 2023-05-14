@@ -44,14 +44,14 @@ end
 --
 -- @return table A table with the configuration properties
 function M.read_config()
-	local ok, values = pcall(vim.api.nvim_get_var, { "gist_is_private", "gist_clipboard" })
-
-	local is_private = ok and values[1] or false
-	local clipboard = ok and values[2] or "+"
+	local ok_private, private = pcall(vim.api.nvim_get_var, "gist_is_private")
+	local is_private = ok_private and private or false
+	local ok_clipboard, clipboard = pcall(vim.api.nvim_get_var, "gist_clipboard")
+	local clipboard_reg = ok_clipboard and clipboard or "+"
 
 	local config = {
 		is_private = is_private,
-		clipboard = clipboard,
+		clipboard = clipboard_reg,
 	}
 
 	return config

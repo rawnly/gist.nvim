@@ -25,7 +25,7 @@ EXAMPLES
         :CreateGistFile [description] [public=true]
 
     The plugin will prompt you for a description and privacy settings for the Gist.
-    After you enter the description and privacy settings, the plugin will create the Gist using the `gh` command-line tool and copy the URL of the created Gist to the system clipboard.
+    After you enter the description and privacy settings, the plugin will ask for confirmation and create the Gist using the `gh` command-line tool and copy the URL of the created Gist to the system clipboard.
 
     To Create a Gist from current selection, run the following command in Neovim:
 

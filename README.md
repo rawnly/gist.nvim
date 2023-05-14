@@ -59,7 +59,7 @@ Both the commands accept the same options which are `[description=]` and `[publi
 If you don't pass the `description` it will prompt to insert one later.
 If you pass `[public=true]` it won't prompt for privacy later.
 
-After you enter the description and privacy settings, the plugin will create the Gist using the gh command-line tool and copy the Gist's URL to the given clipboard registry.
+After you enter the description and privacy settings, the plugin ask for confirmation and will create the Gist using the gh command-line tool and copy the Gist's URL to the given clipboard registry.
 
 You can also list your gists and edit their files on the fly.
 ```vim

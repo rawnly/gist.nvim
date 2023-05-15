@@ -1,4 +1,5 @@
 local core = require("gist.core.gh")
+local config = require("gist").config
 
 local M = {}
 
@@ -10,8 +11,8 @@ local function create_split_terminal(command)
 	vim.api.nvim_win_set_option(win, "number", false)
 	vim.api.nvim_win_set_option(win, "relativenumber", false)
 	vim.api.nvim_buf_set_name(buf, ("term://%s/%s"):format(buf, command[1]))
-	vim.keymap.set("t", "<C-n>", "<Down>", { buffer = buf })
-	vim.keymap.set("t", "<C-p>", "<Up>", { buffer = buf })
+	vim.keymap.set("t", config.list.mappings.next_file, "<Down>", { buffer = buf })
+	vim.keymap.set("t", config.list.mappings.prev_file, "<Up>", { buffer = buf })
 	vim.api.nvim_win_set_option(win, "winbar", "%=Use CTRL-{n,p} to cycle")
 	vim.cmd.startinsert()
 	return buf

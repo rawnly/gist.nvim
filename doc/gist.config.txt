@@ -2,11 +2,16 @@
 
 DESCRIPTION
     The `:CreateGist` command can be configured to avoid prompting the user for the privacy settings of the Gist and target clipboard.
-    This is done via the `setup()` function with the `clipboard` and `private`.
+    This is done via the `setup()` function with the `config.clipboard` and `config.private`.
+    The `:ListGists` command has mappings that allow you to cycle between files if a gist has multiple of them,
+    you can also type to fuzzy find them.
+    The mappings can be customized with the `config.list.mappings.{next_file, prev_file}` via the `setup()` function.
 
 OPTIONS
 	private = false, will set the privacy to `public` by default.
 	clipboard = "0", will set the clipboard to `+` by default, it is the unnamed_plus register `:h quoteplus`.
+    next_file = "<C-n>",
+    prev_file = "<C-p>",
 
 SEE ALSO
     :help gist

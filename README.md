@@ -1,12 +1,12 @@
 # gist.nvim
 
 `gist.nvim` is a Neovim plugin that allows you to create a GitHub Gist from the current file.
-The plugin uses the gh command-line tool to create the Gist and provides a simple interface for specifying the Gist's description and privacy settings.
+The plugin uses the [`gh` command-line tool](https://cli.github.com/) to create the Gist and provides a simple interface for specifying the Gist's description and privacy settings.
 
 ## Installation
 
 To use `gist.nvim`, you need to have Neovim installed on your system.
-You also need to have the gh command-line tool installed and configured with your GitHub account.
+You also need to have the `gh` command-line tool installed and configured with your GitHub account.
 If you intend to use the `ListGists` command to list and edit all your gists, I suggest the `nvim-unception` plugin.
 
 Once you have Neovim and gh installed, you can install `gist.nvim` using your favorite plugin manager.
@@ -17,10 +17,7 @@ return {
   {
     "Rawnly/gist.nvim",
     cmd = { "CreateGist", "CreateGistFromFile", "ListGists" },
-    init = function()
-      vim.g.gist_is_private = false -- All gists will be private, you won't be prompted again
-      vim.g.gist_clipboard = "+" -- The registry to use for copying the Gist URL
-    end,
+    config = true
   },
   -- `ListGists` opens the selected gif in a terminal buffer,
   -- nvim-unception uses neovim remote rpc functionality to open the gist in an actual buffer
@@ -36,6 +33,7 @@ return {
 ```lua
 use {
   "rawnly/gist.nvim",
+  config = function() require("gist").setup() end,
   -- `ListGists` opens the selected gif in a terminal buffer,
   -- this plugin uses neovim remote rpc functionality to open the gist in an actual buffer and not have buffer inception
   requires = { "samjwill/nvim-unception", setup = function() vim.g.unception_block_while_host_edits = true end }
@@ -69,10 +67,14 @@ You can also list your gists and edit their files on the fly.
 
 ## Configuration
 
-`gist.nvim` provides a few configuration options that you can set as global params:
+`gist.nvim` provides a few configuration options that you can with the `setup` function:
 
-- `g:gist_is_private`: All the gists will be private and you won't be prompted again. Defaults to `false`
-- `g:gist_clipboard`: The registry to use for copying the Gist URL. Defaults to `"+"`
+```lua
+    require("gist").setup({
+        private = false, -- All gists will be private, you won't be prompted again
+        clipboard = "+" -- The registry to use for copying the Gist URL
+    })
+```
 
 ## License
 

@@ -52,7 +52,8 @@ local function read_file(path)
 end
 
 function M.exec(cmd, stdin)
-	print(string.format("Executing: %s", cmd))
+	-- NOTE: use the following only locally
+	-- print(string.format("Executing: %s", cmd))
 	local tmp = os.tmpname()
 
 	local pipe = io.popen(cmd .. "> " .. tmp, "w")

@@ -36,7 +36,7 @@ function M.gists()
 
 	local list = core.list_gists()
 	if #list == 0 then
-		print("No gists. You can create one from current buffer with `CreateGist`")
+		print("No gists. You can create one from current buffer with `GistCreate`")
 		return
 	end
 

@@ -2,14 +2,11 @@
 
 DESCRIPTION
     The `:CreateGist` command can be configured to avoid prompting the user for the privacy settings of the Gist and target clipboard.
-    This is done by setting the `gist_clipboard` and `gist_privacy` variables in your `init.vim` file.
+    This is done via the `setup()` function with the `clipboard` and `private`.
 
 OPTIONS
-    None
-
-EXAMPLES
-    `g:gist_clipboard = '0'` will set the clipboard to `no` by default.
-    `g:gist_is_private = true` will set the privacy to `secret` by default.
+	private = false, will set the privacy to `public` by default.
+	clipboard = "0", will set the clipboard to `+` by default, it is the unnamed_plus register `:h quoteplus`.
 
 SEE ALSO
     :help gist

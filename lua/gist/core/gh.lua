@@ -75,21 +75,4 @@ function M.list_gists()
 	end
 end
 
---- Reads the configuration from the user's vimrc
---
--- @return table A table with the configuration properties
-function M.read_config()
-	local ok_private, private = pcall(vim.api.nvim_get_var, "gist_is_private")
-	local is_private = ok_private and private or false
-	local ok_clipboard, clipboard = pcall(vim.api.nvim_get_var, "gist_clipboard")
-	local clipboard_reg = ok_clipboard and clipboard or "+"
-
-	local config = {
-		is_private = is_private,
-		clipboard = clipboard_reg,
-	}
-
-	return config
-end
-
 return M

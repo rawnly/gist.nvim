@@ -7,7 +7,9 @@ The plugin uses the [`gh` command-line tool](https://cli.github.com/) to create 
 
 To use `gist.nvim`, you need to have Neovim installed on your system.
 You also need to have the `gh` command-line tool installed and configured with your GitHub account.
-If you intend to use the `ListGists` command to list and edit all your gists, I suggest the `nvim-unception` plugin.
+
+If you intend to use the `GistsList` command to list and edit all your gists, I suggest the `nvim-unception` plugin.
+
 
 Once you have Neovim and gh installed, you can install `gist.nvim` using your favorite plugin manager.
 
@@ -16,10 +18,10 @@ Once you have Neovim and gh installed, you can install `gist.nvim` using your fa
 return {
   {
     "Rawnly/gist.nvim",
-    cmd = { "CreateGist", "CreateGistFromFile", "ListGists" },
+    cmd = { "GistCreate", "GistCreateFromFile", "GistsList" },
     config = true
   },
-  -- `ListGists` opens the selected gif in a terminal buffer,
+  -- `GistsList` opens the selected gif in a terminal buffer,
   -- nvim-unception uses neovim remote rpc functionality to open the gist in an actual buffer
   -- and prevents neovim buffer inception
   {
@@ -34,7 +36,7 @@ return {
 use {
   "rawnly/gist.nvim",
   config = function() require("gist").setup() end,
-  -- `ListGists` opens the selected gif in a terminal buffer,
+  -- `GistsList` opens the selected gif in a terminal buffer,
   -- this plugin uses neovim remote rpc functionality to open the gist in an actual buffer and not have buffer inception
   requires = { "samjwill/nvim-unception", setup = function() vim.g.unception_block_while_host_edits = true end }
 }
@@ -42,15 +44,15 @@ use {
 
 ## Usage
 
-To create a Gist from the current file, use the `:CreateGist` command in Neovim.
+To create a Gist from the current file, use the `:GistCreate` command in Neovim.
 The plugin will prompt you for a description and whether the Gist should be private or public.
 
 ```vim
-  :CreateGist [description] [public=true]
+  :GistCreate [description] [public=true]
 ```
 
-- `:CreateGist` will create the gist from the current selection
-- `:CreateGistFromFile` will create the gist from the current file
+- `:GistCreate` will create the gist from the current selection
+- `:GistCreateFromFile` will create the gist from the current file
 
 Both the commands accept the same options which are `[description=]` and `[public=true]`
 
@@ -61,9 +63,9 @@ After you enter the description and privacy settings, the plugin ask for confirm
 
 You can also list your gists and edit their files on the fly.
 ```vim
-    :ListGists
+    :GistsList
 ```
-- `:ListGists` will list all your gists and after you select one it will open a buffer to edit it
+- `:GistsList` will list all your gists and after you select one it will open a buffer to edit it
 
 ## Configuration
 

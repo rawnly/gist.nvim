@@ -7,7 +7,9 @@ The plugin uses the [`gh` command-line tool](https://cli.github.com/) to create 
 
 To use `gist.nvim`, you need to have Neovim installed on your system.
 You also need to have the `gh` command-line tool installed and configured with your GitHub account.
+
 If you intend to use the `GistsList` command to list and edit all your gists, I suggest the `nvim-unception` plugin.
+
 
 Once you have Neovim and gh installed, you can install `gist.nvim` using your favorite plugin manager.
 

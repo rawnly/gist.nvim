@@ -6,6 +6,7 @@ vim.api.nvim_create_user_command("GistCreate", gist.create_from_buffer, {
 	range = false,
 })
 
+
 vim.api.nvim_create_user_command("GistCreateFromFile", gist.create_from_file, {
 	nargs = "?",
 	desc = "Create a Gist from the current selection.",

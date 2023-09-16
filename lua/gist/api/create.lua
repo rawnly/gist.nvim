@@ -32,9 +32,9 @@ local function create(content, ctx)
 	if not url then return end
 
 	if err ~= nil then
-		vim.api.nvim_err_writeln("Error creating Gist: " .. err)
+		vim.notify("Error creating Gist: " .. err, vim.log.levels.ERROR)
 	else
-		vim.api.nvim_echo({ { "URL (copied to clipboard): " .. url, "Identifier" } }, true, {})
+		vim.notify("URL (copied to clipboard): " .. url, vim.log.levels.INFO)
 		vim.fn.setreg(config.clipboard, url)
 	end
 end

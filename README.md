@@ -67,6 +67,7 @@ You can also list your gists and edit their files on the fly.
     :GistsList
 ```
 - `:GistsList` will list all your gists and after you select one it will open a buffer to edit it
+  - The default editor for modifying gists is configured as part of the gh cli usually in `~/.config/gh/config.yaml' or the system default
 
 ## Configuration
 

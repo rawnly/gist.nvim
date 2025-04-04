@@ -81,15 +81,16 @@ function M.gists()
 
         local job_id
 
-        -- split the gh_cmd into components to handle wrappers properly
-        local cmd_parts = vim.split(config.gh_cmd, " ")
-        local command = {}
-        for _, part in ipairs(cmd_parts) do
-            table.insert(command, part)
-        end
-        table.insert(command, "gist")
-        table.insert(command, "edit")
-        table.insert(command, gist.hash)
+        -- handle command construction a little differently based on command
+        -- complexity.  there's probably a better way to do this, but this seems
+        -- reasonably robust.
+        local command
+        if config.gh_cmd:find(" ") then
+          -- for complex commands with spaces, use a shell to interpret it
+          command = {"sh", "-c", string.format("%s gist edit %s", config.gh_cmd, gist.hash)}
+        else
+          -- for simple commands without spaces, use the array approach
+          command = {config.gh_cmd, "gist", "edit", gist.hash}
 
         local buf = create_split_terminal(command)
 

@@ -10,7 +10,15 @@ local function create_split_terminal(command)
     vim.api.nvim_win_set_buf(win, buf)
     vim.api.nvim_win_set_option(win, "number", false)
     vim.api.nvim_win_set_option(win, "relativenumber", false)
-    vim.api.nvim_buf_set_name(buf, ("term://%s/%s"):format(buf, command[1]))
+
+    -- create a representative command name for the buffer
+    local cmd_str
+    if type(command) == "table" then
+        cmd_str = table.concat(command, " ")
+    else
+        cmd_str = command
+    end
+    vim.api.nvim_buf_set_name(buf, ("term://%s/%s"):format(buf, cmd_str))
     vim.keymap.set(
         "t",
         config.list.mappings.next_file,
@@ -68,7 +76,16 @@ function M.gists()
 
         local job_id
 
-        local command = { "gh", "gist", "edit", gist.hash }
+        -- split the gh_cmd into components to handle wrappers properly
+        local cmd_parts = vim.split(config.gh_cmd, " ")
+        local command = {}
+        for _, part in ipairs(cmd_parts) do
+            table.insert(command, part)
+        end
+        table.insert(command, "gist")
+        table.insert(command, "edit")
+        table.insert(command, gist.hash)
+
         local buf = create_split_terminal(command)
 
         local term_chan_id = vim.api.nvim_open_term(buf, {
@@ -81,9 +98,26 @@ function M.gists()
             command,
             vim.tbl_extend("force", {
                 on_stdout = function(_, data)
+                    -- check if data is empty or contains only empty strings
+                    if not data or #data == 0 then return end
+
+                    -- filter out empty trailing entries which are common in jobstart output
+                    local last_idx = #data
+                    while last_idx > 0 and data[last_idx] == "" do
+                        last_idx = last_idx - 1
+                    end
+
+                    if last_idx == 0 then return end -- All entries were empty
+
+                    -- create a new filtered table with only non-empty entries
+                    local filtered_data = {}
+                    for i = 1, last_idx do
+                        table.insert(filtered_data, data[i])
+                    end
+
                     vim.api.nvim_chan_send(
                         term_chan_id,
-                        table.concat(data, "\r\n")
+                        table.concat(filtered_data, "\r\n") .. "\r\n"
                     )
 
                     local changed = vim.fn.bufnr() ~= buf
@@ -119,8 +153,42 @@ function M.gists()
                         })
                     end
                 end,
-                on_exit = function()
-                    vim.api.nvim_buf_delete(buf, { force = true })
+                on_stderr = function(_, data)
+                    -- check if data is empty or contains only empty strings
+                    if not data or #data == 0 then return end
+
+                    -- filter out empty trailing entries which are common in jobstart output
+                    local last_idx = #data
+                    while last_idx > 0 and data[last_idx] == "" do
+                        last_idx = last_idx - 1
+                    end
+
+                    if last_idx == 0 then return end -- All entries were empty
+
+                    -- create a new filtered table with only non-empty entries
+                    local filtered_data = {}
+                    for i = 1, last_idx do
+                        table.insert(filtered_data, data[i])
+                    end
+
+                    vim.api.nvim_chan_send(
+                        term_chan_id,
+                        table.concat(filtered_data, "\r\n") .. "\r\n"
+                    )
+                end,
+                on_exit = function(_, exit_code)
+                    if exit_code ~= 0 then
+                        vim.api.nvim_chan_send(
+                            term_chan_id,
+                            "\r\nCommand exited with code " .. exit_code .. "\r\n"
+                        )
+                    end
+
+                    -- Don't close window immediately on error to allow seeing the error
+                    local delay = exit_code ~= 0 and 3000 or 1000
+                    vim.defer_fn(function()
+                        vim.api.nvim_buf_delete(buf, { force = true })
+                    end, delay) -- give user a chance to see any error messages
                 end,
                 pty = true,
             }, {})

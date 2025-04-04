@@ -3,6 +3,7 @@ local M = {}
 M.config = {
     private = false,
     clipboard = "+",
+    gh_cmd = "gh",
     list = {
         mappings = {
             next_file = "<C-n>",

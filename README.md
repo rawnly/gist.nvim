@@ -78,6 +78,7 @@ You can also list your gists and edit their files on the fly.
         private = false, -- All gists will be private, you won't be prompted again
         clipboard = "+", -- The registry to use for copying the Gist URL
         -- gh_cmd = "gh"
+        split_direction = "vertical", -- default: "vertical" - set window split orientation when opening a gist ("vertical" or "horizontal")
         list = {
             -- If there are multiple files in a gist you can scroll them,
             -- with vim-like bindings n/p next previous

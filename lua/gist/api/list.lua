@@ -4,7 +4,12 @@ local config = require("gist").config
 local M = {}
 
 local function create_split_terminal(command)
-    vim.cmd.vsplit()
+    local config = require("gist").config
+    if config.split_direction == "vertical" then
+      vim.cmd.vsplit()
+    else
+      vim.cmd.split()
+    end
     local win = vim.api.nvim_get_current_win()
     local buf = vim.api.nvim_create_buf(false, true)
     vim.api.nvim_win_set_buf(win, buf)

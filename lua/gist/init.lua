@@ -4,6 +4,7 @@ M.config = {
     private = false,
     clipboard = "+",
     gh_cmd = "gh",
+    split_direction = "vertical",
     list = {
         mappings = {
             next_file = "<C-n>",

@@ -53,6 +53,7 @@ end
 
 --- List user gists and edit them on the fly.
 function M.gists()
+    local config = require("gist").config
     if
         pcall(require, "unception")
         and not vim.g.unception_block_while_host_edits

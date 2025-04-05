@@ -91,6 +91,7 @@ function M.gists()
         else
           -- for simple commands without spaces, use the array approach
           command = {config.gh_cmd, "gist", "edit", gist.hash}
+        end
 
         local buf = create_split_terminal(command)
 

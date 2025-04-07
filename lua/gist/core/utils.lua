@@ -62,7 +62,9 @@ function M.exec(cmd, stdin)
     -- print(string.format("Executing: %s", cmd))
     local tmp = os.tmpname()
 
-    local pipe = io.popen(cmd .. "> " .. tmp, "w")
+    -- ensure command is properly formatted as a string
+    local cmd_str = type(cmd) == "table" and table.concat(cmd, " ") or cmd
+    local pipe = io.popen(cmd_str .. "> " .. tmp, "w")
 
     if not pipe then
         return nil

@@ -92,7 +92,7 @@ You can also list your gists and edit their files on the fly.
 
 By default `gh_cmd` is set to the default `gh` command. However, there may be
 cases where you want to override this with your custom wrapper.  Users of the
-1password op plugin will likely want to point to the wrapper command.
+1Password op plugin will likely want to point to the wrapper command.
 (example: `op plugin run -- gh`)
 
 ## License

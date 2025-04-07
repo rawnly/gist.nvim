@@ -13,12 +13,18 @@ function M.create_gist(filename, content, description, private)
     local public_flag = private and "" or "--public"
     description = vim.fn.shellescape(description)
 
+    local config = require("gist").config
     local cmd
+
+    -- split the gh_cmd into components to handle wrappers properly
+    local cmd_parts = vim.split(config.gh_cmd, " ")
+    local base_cmd = table.concat(cmd_parts, " ")
 
     if content ~= nil then
         filename = vim.fn.shellescape(filename)
         cmd = string.format(
-            "gh gist create -f %s -d %s %s",
+            "%s gist create -f %s -d %s %s",
+            base_cmd,
             filename,
             description,
             public_flag
@@ -26,7 +32,8 @@ function M.create_gist(filename, content, description, private)
     else
         -- expand filepath if no content is provided
         cmd = string.format(
-            "gh gist create %s %s --filename %s -d %s",
+            "%s gist create %s %s --filename %s -d %s",
+            base_cmd,
             vim.fn.expand("%"),
             public_flag,
             filename,
@@ -57,7 +64,10 @@ end
 --
 -- @return [string]|nil The URLs of all the Gists
 function M.list_gists()
-    local cmd = "gh gist list"
+    local config = require("gist").config
+    -- create a command that properly handles command wrappers
+    local cmd_parts = vim.split(config.gh_cmd, " ")
+    local cmd = table.concat(cmd_parts, " ") .. " gist list"
 
     local output = utils.exec(cmd)
     if type(output) == "string" then

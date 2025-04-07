@@ -22,7 +22,7 @@ return {
     cmd = { "GistCreate", "GistCreateFromFile", "GistsList" },
     config = true
   },
-  -- `GistsList` opens the selected gif in a terminal buffer,
+  -- `GistsList` opens the selected gist in a terminal buffer,
   -- nvim-unception uses neovim remote rpc functionality to open the gist in an actual buffer
   -- and prevents neovim buffer inception
   {
@@ -78,6 +78,7 @@ You can also list your gists and edit their files on the fly.
         private = false, -- All gists will be private, you won't be prompted again
         clipboard = "+", -- The registry to use for copying the Gist URL
         -- split_direction = "vertical", -- default: "vertical" - set window split orientation when opening a gist ("vertical" or "horizontal")
+        -- gh_cmd = "gh"
         list = {
             -- If there are multiple files in a gist you can scroll them,
             -- with vim-like bindings n/p next previous
@@ -88,6 +89,11 @@ You can also list your gists and edit their files on the fly.
         }
     })
 ```
+
+By default `gh_cmd` is set to the default `gh` command. However, there may be
+cases where you want to override this with your custom wrapper.  Users of the
+1password op plugin will likely want to point to the wrapper command.
+(example: `op plugin run -- gh`)
 
 ## License
 

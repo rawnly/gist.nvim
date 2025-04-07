@@ -3,6 +3,7 @@ local M = {}
 M.config = {
     private = false,
     clipboard = "+",
+    split_direction = "vertical",
     list = {
         mappings = {
             next_file = "<C-n>",

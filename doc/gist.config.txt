@@ -9,6 +9,7 @@ DESCRIPTION
 
 OPTIONS
 	private = false, will set the privacy to `public` by default.
+  split_direction = "vertical", controls the split orientation when opening a gist. values: ["vertical" | "horizontal"]. default "vertical".
 	clipboard = "0", will set the clipboard to `+` by default, it is the unnamed_plus register `:h quoteplus`.
     next_file = "<C-n>",
     prev_file = "<C-p>",

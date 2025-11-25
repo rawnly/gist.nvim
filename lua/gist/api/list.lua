@@ -65,6 +65,11 @@ local function create_readonly_buffer(gist)
     local winbar = string.format("%%=GIST `%s` [READ-ONLY]", gist.name)
     vim.api.nvim_win_set_option(win, "winbar", winbar)
 
+    local extension = gist.name:match("^.+%.(.+)$")
+    if extension then
+        vim.api.nvim_buf_set_option(buf, "filetype", extension)
+    end
+
     return buf
 end
 

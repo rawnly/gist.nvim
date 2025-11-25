@@ -16,12 +16,13 @@ function M.create(filename, content, description, personal)
     cmd_parts[#cmd_parts + 1] = "snippet"
     cmd_parts[#cmd_parts + 1] = "create"
 
-    -- glab snippet create <filename> [--flags]
+    filename = vim.fn.shellescape(filename)
+    cmd_parts[#cmd_parts + 1] = "--title " .. filename
+
     if content ~= nil then
-        cmd_parts[#cmd_parts + 1] = vim.fn.expand("%s")
-    else
-        filename = vim.fn.shellescape(filename)
         cmd_parts[#cmd_parts + 1] = "--filename " .. filename
+    else
+        cmd_parts[#cmd_parts + 1] = vim.fn.expand("%s")
     end
 
     if description ~= "" then
@@ -42,10 +43,11 @@ function M.create(filename, content, description, personal)
     end
 
     if output == nil or output == "" then
-        return nil, "No output from termbin"
+        return nil, "No output from gitlab"
     end
 
-    local pattern = string.format("https?://%s/%%S+", config.url)
+    local pattern =
+        string.format("https://gitlab.com/-/snippets/%S+", config.url)
     local url = output:match(pattern)
 
     return url, nil

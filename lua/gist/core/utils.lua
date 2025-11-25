@@ -105,31 +105,32 @@ function M.parseArgs(args)
         parsed[key] = value
     end
 
-return parsed
+    return parsed
 end
 
 function M.detect_multiplexer()
     local tmux = vim.env.TMUX
     local zellij = vim.env.ZELLIJ
-    
+
     if tmux and tmux ~= "" then
         return "tmux"
     elseif zellij and zellij ~= "" then
         return "zellij"
     end
-    
+
     return nil
 end
 
 function M.create_multiplexer_command(multiplexer, command)
-    local cmd_str = type(command) == "table" and table.concat(command, " ") or command
-    
+    local cmd_str = type(command) == "table" and table.concat(command, " ")
+        or command
+
     if multiplexer == "tmux" then
         return string.format("tmux new-window '%s'", cmd_str)
     elseif multiplexer == "zellij" then
-        return string.format("zellij action new-tab -- bash -c '%s'", cmd_str)
+        return string.format("zellij run -c -i -n gist -- %s", cmd_str)
     end
-    
+
     return nil
 end
 

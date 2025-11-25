@@ -11,7 +11,10 @@ SYNOPSIS
 DESCRIPTION
     The `:GistCreate` command creates a GitHub Gist from the buffer selection using the `gh` command-line tool.
     The `:GistCreateFile` command creates a GitHub Gist from the current file using the `gh` command-line tool.
-    The `:GistsList` command lists all the GitHub Gists from your account and allows you to edit them directly inside neovim.
+    The `:GistsList` command lists all the GitHub Gists from your account and allows you to edit them.
+    
+    When `list.use_multiplexer` is enabled and a multiplexer (tmux/zellij) is detected, gists are opened in new multiplexer tabs.
+    Otherwise, gists are opened in read-only Neovim buffers for viewing.
 
     The plugin prompts you for a description and privacy settings for the Gist creation, and then copies the URL of the created Gist to the system clipboard.
 

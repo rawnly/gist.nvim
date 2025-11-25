@@ -145,10 +145,14 @@ function M.format(g)
 end
 
 function M.get_create_details(ctx)
-    local config = require("gist").config
+    local config = require("gist").config.platforms.github
+    local prompts = require("gist").config.prompts.create
 
     local filename = vim.fn.expand("%:t")
-    local description = ctx.description or vim.fn.input("Gist description: ")
+    local description = ""
+    if prompts.description then
+        description = ctx.description or vim.fn.input("Provide a description: ")
+    end
 
     local is_private
 
@@ -156,7 +160,11 @@ function M.get_create_details(ctx)
         is_private = not ctx.public
     else
         is_private = config.private
-            or vim.fn.input("Create a private Gist? (y/n): ") == "y"
+        if prompts.private and not is_private then
+            local user_input = vim.fn.input("Create a personal Gist? (y/n): ")
+
+            is_private = user_input:lower() == "y"
+        end
     end
 
     return {

@@ -1,5 +1,6 @@
 local gh = require("gist.core.gh")
 local termbin = require("gist.core.termbin")
+local gitlab = require("gist.core.gitlab")
 
 local M = {}
 
@@ -14,6 +15,8 @@ function M.create(...)
 
     if platform == "github" then
         return gh.create(...)
+    elseif platform == "gitlab" then
+        return gitlab.create(...)
     elseif platform == "termbin" then
         return termbin.create(...)
     else
@@ -67,11 +70,9 @@ function M.get_create_details(ctx)
     if platform == "github" then
         return gh.get_create_details(ctx)
     elseif platform == "termbin" then
-        return {
-            filename = "termbin_upload.txt",
-            description = "Upload to termbin.com",
-            is_private = false,
-        }
+        return termbin.get_create_details()
+    elseif platform == "gitlab" then
+        return gitlab.get_create_details(ctx)
     else
         error("Unsupported platform: " .. tostring(platform))
     end

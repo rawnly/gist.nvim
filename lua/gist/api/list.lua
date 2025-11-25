@@ -53,10 +53,16 @@ function M.gists()
         return
     end
 
-    local listPrompt = "Select a file to edit"
+    local platform_prefix = string.format("[%s]", string.upper(config.platform))
+
+    local listPrompt =
+        string.format("%s Select a file to edit", platform_prefix)
 
     if not has_mux or config.list.read_only then
-        listPrompt = "Select a file to view (read-only)"
+        listPrompt = string.format(
+            "%s Select a file to view (read-only)",
+            platform_prefix
+        )
     end
 
     vim.ui.select(list, {

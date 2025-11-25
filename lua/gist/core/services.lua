@@ -1,21 +1,29 @@
-local platform = require("gist").config.platform
-
 local gh = require("gist.core.gh")
-local tb = require("gist.core.termbin")
+local termbin = require("gist.core.termbin")
 
 local M = {}
 
+local function get_platform()
+    local platform = require("gist").config.platform
+
+    return platform
+end
+
 function M.create(...)
+    local platform = get_platform()
+
     if platform == "github" then
         return gh.create(...)
     elseif platform == "termbin" then
-        return tb.create(...)
+        return termbin.create(...)
     else
         error("Unsupported platform: " .. tostring(platform))
     end
 end
 
 function M.fetch_content(...)
+    local platform = get_platform()
+
     if platform == "github" then
         return gh.fetch_content(...)
     else
@@ -24,6 +32,8 @@ function M.fetch_content(...)
 end
 
 function M.format(...)
+    local platform = get_platform()
+
     if platform == "github" then
         return gh.format(...)
     else
@@ -32,6 +42,8 @@ function M.format(...)
 end
 
 function M.get_edit_cmd(...)
+    local platform = get_platform()
+
     if platform == "github" then
         return gh.get_edit_cmd(...)
     else
@@ -40,8 +52,26 @@ function M.get_edit_cmd(...)
 end
 
 function M.list()
+    local platform = get_platform()
+
     if platform == "github" then
         return gh.list()
+    else
+        error("Unsupported platform: " .. tostring(platform))
+    end
+end
+
+function M.get_create_details(ctx)
+    local platform = get_platform()
+
+    if platform == "github" then
+        return gh.get_create_details(ctx)
+    elseif platform == "termbin" then
+        return {
+            filename = "termbin_upload.txt",
+            description = "Upload to termbin.com",
+            is_private = false,
+        }
     else
         error("Unsupported platform: " .. tostring(platform))
     end

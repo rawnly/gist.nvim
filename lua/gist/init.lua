@@ -10,12 +10,9 @@ M.config = {
         github = {
             cmd = "gh",
             list = {
-                limit = nil, -- Limit the number of gists fetched (default: nil, uses gh default of 10)
+                limit = nil,       -- Limit the number of gists fetched (default: nil, uses gh default of 10)
                 read_only = false, -- Opens the given gists in read-only buffers. This option is ignored if use_multiplexer is `false`
             },
-        },
-        gitlab = {
-            cmd = "glab",
         },
         termbin = {
             url = "termbin.com",

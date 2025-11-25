@@ -144,4 +144,26 @@ function M.format(g)
     )
 end
 
+function M.get_create_details(ctx)
+    local config = require("gist").config
+
+    local filename = vim.fn.expand("%:t")
+    local description = ctx.description or vim.fn.input("Gist description: ")
+
+    local is_private
+
+    if ctx.public ~= nil then
+        is_private = not ctx.public
+    else
+        is_private = config.private
+            or vim.fn.input("Create a private Gist? (y/n): ") == "y"
+    end
+
+    return {
+        filename = filename,
+        description = description,
+        is_private = is_private,
+    }
+end
+
 return M

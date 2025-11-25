@@ -52,16 +52,19 @@ local function create_readonly_buffer(gist)
     local buf = vim.api.nvim_create_buf(false, true)
     local win = vim.api.nvim_get_current_win()
     vim.api.nvim_win_set_buf(win, buf)
-    
+
     -- Set buffer to be readonly
     vim.api.nvim_buf_set_option(buf, "readonly", true)
     vim.api.nvim_buf_set_option(buf, "modifiable", false)
-    vim.api.nvim_buf_set_name(buf, string.format("gist://%s/%s", gist.hash, gist.name))
-    
+    vim.api.nvim_buf_set_name(
+        buf,
+        string.format("gist://%s/%s", gist.hash, gist.name)
+    )
+
     -- Set winbar
     local winbar = string.format("%%=GIST `%s` [READ-ONLY]", gist.name)
     vim.api.nvim_win_set_option(win, "winbar", winbar)
-    
+
     return buf
 end
 
@@ -69,7 +72,7 @@ local function fetch_gist_content(gist_hash)
     local config = require("gist").config
     local cmd_parts = vim.split(config.gh_cmd, " ")
     local cmd = table.concat(cmd_parts, " ") .. " gist view -r " .. gist_hash
-    
+
     local output = utils.exec(cmd)
     return output
 end
@@ -77,6 +80,9 @@ end
 --- List user gists and edit them on the fly.
 function M.gists()
     local config = require("gist").config
+    local multiplexer = utils.detect_multiplexer()
+    local has_mux = config.list.use_multiplexer and multiplexer
+
     if
         pcall(require, "unception")
         and not vim.g.unception_block_while_host_edits
@@ -95,20 +101,21 @@ function M.gists()
         return
     end
 
+    local listPrompt = "Select a gist to edit"
+
+    if not has_mux or config.list.read_only then
+        listPrompt = "Select a gist to view (read-only)"
+    end
+
     vim.ui.select(list, {
-        prompt = "Select a gist to edit",
+        prompt = listPrompt,
         format_item = format_gist,
     }, function(gist)
         if not gist then
             return
         end
 
-        -- Check if we should use multiplexer
-        local multiplexer = utils.detect_multiplexer()
-        if config.list.use_multiplexer and multiplexer then
-            -- handle command construction a little differently based on command
-            -- complexity.  there's probably a better way to do this, but this seems
-            -- reasonably robust.
+        function get_edit_cmd()
             local command
             if config.gh_cmd:find(" ") then
                 -- for complex commands with spaces, use a shell to interpret it
@@ -122,7 +129,15 @@ function M.gists()
                 command = { config.gh_cmd, "gist", "edit", gist.hash }
             end
 
-            local mux_cmd = utils.create_multiplexer_command(multiplexer, command)
+            return command
+        end
+
+        -- Check if we should use multiplexer
+        if has_mux and not config.list.read_only then
+            local command = get_edit_cmd()
+
+            local mux_cmd =
+                utils.create_multiplexer_command(multiplexer, command)
             if mux_cmd then
                 vim.fn.system(mux_cmd)
                 print(string.format("Opening gist in %s tab", multiplexer))
@@ -136,7 +151,13 @@ function M.gists()
             local buf = create_readonly_buffer(gist)
             -- Temporarily make buffer modifiable to set content
             vim.api.nvim_buf_set_option(buf, "modifiable", true)
-            vim.api.nvim_buf_set_lines(buf, 0, -1, false, vim.split(content, "\n"))
+            vim.api.nvim_buf_set_lines(
+                buf,
+                0,
+                -1,
+                false,
+                vim.split(content, "\n")
+            )
             vim.api.nvim_buf_set_option(buf, "modifiable", false)
             print("Opened gist in read-only buffer")
         else

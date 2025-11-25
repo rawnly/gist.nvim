@@ -16,8 +16,9 @@ OPTIONS
     gh_cmd = "gh", allows the specification of gh wrappers which handle, auth, etc. defaults to "gh"
 	clipboard = "0", will set the clipboard to `+` by default, it is the unnamed_plus register `:h quoteplus`.
 	list = {
-        use_multiplexer = false, enables terminal multiplexer support (tmux/zellij) for editing gists. default false.
+        use_multiplexer = true, enables terminal multiplexer support (tmux/zellij) for editing gists. default false.
         limit = nil, limits the number of gists fetched. default nil (uses gh default of 10).
+        read_only = false, Opens the given gists in read-only buffers. This option is ignored if use_multiplexer is `false`, default false
         next_file = "<C-n>",
         prev_file = "<C-p>",
 	}

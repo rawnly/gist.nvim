@@ -82,7 +82,8 @@ You can also list your gists and edit their files on the fly.
         split_direction = "vertical", -- default: "vertical" - set window split orientation when opening a gist ("vertical" or "horizontal")
         gh_cmd = "gh"
         list = {
-            use_multiplexer = false, -- Use terminal multiplexer (tmux/zellij) if detected for editing gists
+            use_multiplexer = true, -- Use terminal multiplexer (tmux/zellij) if detected for editing gists
+            read_only = false, -- Opens the given gists in read-only buffers. This option is ignored if use_multiplexer is `false`
             limit = nil, -- Limit the number of gists fetched (default: nil, uses gh default of 10)
             -- If there are multiple files in a gist you can scroll them,
             -- with vim-like bindings n/p next previous

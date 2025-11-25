@@ -14,6 +14,7 @@ OPTIONS
 	clipboard = "0", will set the clipboard to `+` by default, it is the unnamed_plus register `:h quoteplus`.
     next_file = "<C-n>",
     prev_file = "<C-p>",
+    limit = nil, controls the number of gists to fetch. Defaults to nil (uses gh default of 10). Set to a number to fetch more gists.
 
 SEE ALSO
     :help gist

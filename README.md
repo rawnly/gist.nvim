@@ -78,14 +78,17 @@ You can also list your gists and edit their files on the fly.
         private = false, -- All gists will be private, you won't be prompted again
         clipboard = "+", -- The registry to use for copying the Gist URL
         split_direction = "vertical", -- default: "vertical" - set window split orientation when opening a gist ("vertical" or "horizontal")
-        gh_cmd = "gh"
+        gh_cmd = "gh",
         list = {
             -- If there are multiple files in a gist you can scroll them,
             -- with vim-like bindings n/p next previous
             mappings = {
                 next_file = "<C-n>",
                 prev_file = "<C-p>"
-            }
+            },
+            -- Limit the number of gists to fetch. Defaults to what `gh` uses (10 currently).
+            -- Set to a number (e.g., 30) to fetch more gists.
+            limit = nil
         }
     })
 ```

@@ -12,6 +12,7 @@ OPTIONS
   split_direction = "vertical", controls the split orientation when opening a gist. values: ["vertical" | "horizontal"]. default "vertical".
   gh_cmd = "gh", allows the specification of gh wrappers which handle, auth, etc. defaults to "gh"
 	clipboard = "0", will set the clipboard to `+` by default, it is the unnamed_plus register `:h quoteplus`.
+    limit = nil, limits the number of gists fetched. default nil (uses gh default of 10).
     next_file = "<C-n>",
     prev_file = "<C-p>",
 

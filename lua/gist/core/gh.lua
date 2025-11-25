@@ -69,6 +69,11 @@ function M.list_gists()
     local cmd_parts = vim.split(config.gh_cmd, " ")
     local cmd = table.concat(cmd_parts, " ") .. " gist list"
 
+    -- Add limit if configured
+    if config.list.limit and type(config.list.limit) == "number" and config.list.limit > 0 then
+        cmd = cmd .. " -L " .. math.floor(config.list.limit)
+    end
+
     local output = utils.exec(cmd)
     if type(output) == "string" then
         local list = {}

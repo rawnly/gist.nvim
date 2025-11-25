@@ -46,9 +46,7 @@ function M.create(filename, content, description, personal)
         return nil, "No output from gitlab"
     end
 
-    local pattern =
-        string.format("https://gitlab.com/-/snippets/%S+", config.url)
-    local url = output:match(pattern)
+    local url = output:match("https://gitlab%.com/%-%/snippets/%d+")
 
     return url, nil
 end

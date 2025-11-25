@@ -1,7 +1,7 @@
 local gist = require("gist.api")
 
 local complete = function()
-    return { "description=", "public=" }
+    return { "description=", "public=", "platform=github", "platform=gitlab" }
 end
 
 vim.api.nvim_create_user_command("GistCreate", function(args)
@@ -22,6 +22,10 @@ end, {
     complete = complete,
 })
 
-vim.api.nvim_create_user_command("GistsList", gist.list_gists, {
-    desc = "List user Gists.",
+vim.api.nvim_create_user_command("GistsList", function(args)
+    gist.list_gists(args)
+end, {
+    nargs = "?",
+    desc = "List user Gists/Snippets.",
+    complete = complete,
 })

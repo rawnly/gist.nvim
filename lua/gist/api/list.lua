@@ -40,19 +40,32 @@ local function create_split_terminal(command)
     return buf
 end
 
-local function format_gist(g)
-    return string.format(
-        "%s (%s) |%s 📃| [%s]",
-        g.name, -- Gist name
-        g.hash, -- Gist hash
-        g.files, -- Gist files number
-        g.privacy == "public" and "➕" or "➖" -- Gist privacy setting (public/private)
-    )
+local function format_item(g, platform)
+    if platform == "github" then
+        return string.format(
+            "%s (%s) |%s 📃| [%s]",
+            g.name, -- Gist name
+            g.hash, -- Gist hash
+            g.files, -- Gist files number
+            g.privacy == "public" and "➕" or "➖" -- Gist privacy setting (public/private)
+        )
+    elseif platform == "gitlab" then
+        return string.format(
+            "%s (%s) |%s 📄| [%s]",
+            g.title, -- Snippet title
+            g.id, -- Snippet ID
+            g.files, -- Snippet files number
+            g.visibility == "public" and "➕" or "➖" -- Snippet visibility (public/private)
+        )
+    end
 end
 
---- List user gists and edit them on the fly.
-function M.gists()
+--- List user gists/snippets and edit them on the fly.
+function M.gists(opts)
     local config = require("gist").config
+    local args = opts and utils.parseArgs(opts.args) or {}
+    local platform = args.platform or config.default_platform
+
     if
         pcall(require, "unception")
         and not vim.g.unception_block_while_host_edits
@@ -63,19 +76,30 @@ function M.gists()
         return
     end
 
-    local list = core.list_gists()
-    if #list == 0 then
+    local list
+    if platform == "github" then
+        list = core.list_gists()
+    elseif platform == "gitlab" then
+        local gitlab_core = require("gist.core.gitlab")
+        list = gitlab_core.list_snippets()
+    else
+        vim.notify("Unsupported platform: " .. platform, vim.log.levels.ERROR)
+        return
+    end
+
+    if not list or #list == 0 then
+        local item_name = platform == "github" and "gists" or "snippets"
         print(
-            "No gists. You can create one from current buffer with `GistCreate`"
+            "No " .. item_name .. ". You can create one from current buffer with `GistCreate`"
         )
         return
     end
 
     vim.ui.select(list, {
-        prompt = "Select a gist to edit",
-        format_item = format_gist,
-    }, function(gist)
-        if not gist then
+        prompt = "Select a " .. (platform == "github" and "gist" or "snippet") .. " to edit",
+        format_item = function(g) return format_item(g, platform) end,
+    }, function(item)
+        if not item then
             return
         end
 
@@ -85,16 +109,22 @@ function M.gists()
         -- complexity.  there's probably a better way to do this, but this seems
         -- reasonably robust.
         local command
-        if config.gh_cmd:find(" ") then
-            -- for complex commands with spaces, use a shell to interpret it
-            command = {
-                "sh",
-                "-c",
-                string.format("%s gist edit %s", config.gh_cmd, gist.hash),
-            }
-        else
-            -- for simple commands without spaces, use the array approach
-            command = { config.gh_cmd, "gist", "edit", gist.hash }
+        if platform == "github" then
+            if config.gh_cmd:find(" ") then
+              -- for complex commands with spaces, use a shell to interpret it
+              command = {"sh", "-c", string.format("%s gist edit %s", config.gh_cmd, item.hash)}
+            else
+              -- for simple commands without spaces, use the array approach
+              command = {config.gh_cmd, "gist", "edit", item.hash}
+            end
+        elseif platform == "gitlab" then
+            -- GitLab snippets don't have an interactive edit command like GitHub gists
+            -- We'll open the snippet in the browser for editing
+            local url = string.format("https://gitlab.com/-/snippets/%s", item.id)
+            local open_cmd = vim.fn.has("mac") == 1 and "open" or (vim.fn.has("unix") == 1 and "xdg-open" or "start")
+            vim.fn.jobstart({open_cmd, url})
+            vim.notify("Opened snippet in browser for editing", vim.log.levels.INFO)
+            return
         end
 
         local buf = create_split_terminal(command)
@@ -148,14 +178,16 @@ function M.gists()
                             true
                         )
 
-                        local winbar = ("%sGIST `%s`"):format("%=", gist.name)
+                        local item_type = platform == "github" and "GIST" or "SNIPPET"
+                        local item_name = platform == "github" and item.name or item.title
+                        local winbar = ("%s%s `%s`"):format("%=", item_type, item_name)
                         vim.api.nvim_win_set_option(
                             vim.fn.win_getid(),
                             "winbar",
                             winbar
                         )
                     end
-                    if gist.files > 1 and changed then
+                    if item.files > 1 and changed then
                         vim.api.nvim_create_autocmd({ "BufDelete" }, {
                             buffer = vim.fn.bufnr(),
                             group = vim.api.nvim_create_augroup(

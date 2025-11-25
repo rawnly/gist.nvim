@@ -28,19 +28,35 @@ end
 local function create(content, ctx)
     local config = require("gist").config
     local details = get_details(ctx)
+    local platform = ctx.platform or config.default_platform
 
-    local url, err = core.create_gist(
-        details.filename,
-        content,
-        details.description,
-        details.is_private
-    )
+    local url, err
+    if platform == "github" then
+        url, err = core.create_gist(
+            details.filename,
+            content,
+            details.description,
+            details.is_private
+        )
+    elseif platform == "gitlab" then
+        local gitlab_core = require("gist.core.gitlab")
+        url, err = gitlab_core.create_snippet(
+            details.filename,
+            content,
+            details.description,
+            details.is_private
+        )
+    else
+        vim.notify("Unsupported platform: " .. platform, vim.log.levels.ERROR)
+        return
+    end
+
     if not url then
         return
     end
 
     if err ~= nil then
-        vim.notify("Error creating Gist: " .. err, vim.log.levels.ERROR)
+        vim.notify("Error creating " .. (platform == "github" and "Gist" or "Snippet") .. ": " .. err, vim.log.levels.ERROR)
     else
         vim.notify("URL (copied to clipboard): " .. url, vim.log.levels.INFO)
         vim.fn.setreg(config.clipboard, url)
@@ -63,6 +79,7 @@ function M.from_buffer(opts)
     return create(content, {
         description = description,
         public = args.public,
+        platform = args.platform,
     })
 end
 
@@ -74,6 +91,7 @@ function M.from_file(opts)
     create(nil, {
         description = description,
         public = args.public,
+        platform = args.platform,
     })
 end
 

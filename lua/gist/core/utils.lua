@@ -88,6 +88,12 @@ function M.extract_gist_url(output)
     return output:match(pattern)
 end
 
+function M.extract_gitlab_url(output)
+    local pattern = "https://gitlab.com/%S+"
+
+    return output:match(pattern)
+end
+
 -- @param args string
 function M.parseArgs(args)
     -- parse args as key=value

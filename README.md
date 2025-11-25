@@ -1,13 +1,13 @@
 # gist.nvim
 ![Showcase](gist.nvim.gif)
 
-`gist.nvim` is a Neovim plugin that allows you to create a GitHub Gist from the current file.
-The plugin uses the [`gh` command-line tool](https://cli.github.com/) to create the Gist and provides a simple interface for specifying the Gist's description and privacy settings.
+`gist.nvim` is a Neovim plugin that allows you to create GitHub Gists or GitLab Snippets from the current file.
+The plugin uses the [`gh` command-line tool](https://cli.github.com/) for GitHub and [`glab` command-line tool](https://gitlab.com/gitlab-org/cli) for GitLab to create gists/snippets and provides a simple interface for specifying the description and privacy settings.
 
 ## Installation
 
 To use `gist.nvim`, you need to have Neovim installed on your system.
-You also need to have the `gh` command-line tool installed and configured with your GitHub account.
+You also need to have the `gh` command-line tool installed and configured with your GitHub account for GitHub gists, and/or the `glab` command-line tool installed and configured with your GitLab account for GitLab snippets.
 
 If you intend to use the `GistsList` command to list and edit all your gists, I suggest the `nvim-unception` plugin.
 
@@ -49,25 +49,27 @@ To create a Gist from the current file, use the `:GistCreate` command in Neovim.
 The plugin will prompt you for a description and whether the Gist should be private or public.
 
 ```vim
-  :GistCreate [description] [public=true]
+  :GistCreate [description] [public=true] [platform=github]
 ```
 
-- `:GistCreate` will create the gist from the current selection
-- `:GistCreateFromFile` will create the gist from the current file
+- `:GistCreate` will create the gist/snippet from the current selection
+- `:GistCreateFromFile` will create the gist/snippet from the current file
 
-Both the commands accept the same options which are `[description=]` and `[public=true]`
+All commands accept the same options: `[description=]`, `[public=true]`, and `[platform=github]` or `[platform=gitlab]`
 
 If you don't pass the `description` it will prompt to insert one later.
 If you pass `[public=true]` it won't prompt for privacy later.
+If you don't specify `platform`, it defaults to the configured `default_platform` (GitHub by default).
 
-After you enter the description and privacy settings, the plugin ask for confirmation and will create the Gist using the gh command-line tool and copy the Gist's URL to the given clipboard registry.
+After you enter the description and privacy settings, the plugin will ask for confirmation and create the gist/snippet using the appropriate CLI tool, then copy the URL to the configured clipboard register.
 
-You can also list your gists and edit their files on the fly.
+You can also list your gists/snippets and edit them on the fly.
 ```vim
-    :GistsList
+    :GistsList [platform=github]
 ```
-- `:GistsList` will list all your gists and after you select one it will open a buffer to edit it
-  - The default editor for modifying gists is configured as part of the gh cli usually in `~/.config/gh/config.yaml' or the system default
+- `:GistsList` will list all your gists/snippets and after you select one it will open a buffer to edit it
+  - For GitHub gists: The default editor for modifying gists is configured as part of the gh cli usually in `~/.config/gh/config.yaml' or the system default
+  - For GitLab snippets: Selecting a snippet will open it in your default web browser for editing
 
 ## Configuration
 
@@ -75,12 +77,14 @@ You can also list your gists and edit their files on the fly.
 
 ```lua
     require("gist").setup({
-        private = false, -- All gists will be private, you won't be prompted again
-        clipboard = "+", -- The registry to use for copying the Gist URL
+        private = false, -- All gists/snippets will be private, you won't be prompted again
+        clipboard = "+", -- The registry to use for copying the URL
         split_direction = "vertical", -- default: "vertical" - set window split orientation when opening a gist ("vertical" or "horizontal")
-        gh_cmd = "gh"
+        gh_cmd = "gh", -- GitHub CLI command
+        glab_cmd = "glab", -- GitLab CLI command
+        default_platform = "github", -- Default platform: "github" or "gitlab"
         list = {
-            limit = nil, -- Limit the number of gists fetched (default: nil, uses gh default of 10)
+            limit = nil, -- Limit the number of gists/snippets fetched (default: nil, uses CLI defaults)
             -- If there are multiple files in a gist you can scroll them,
             -- with vim-like bindings n/p next previous
             mappings = {
@@ -91,10 +95,10 @@ You can also list your gists and edit their files on the fly.
     })
 ```
 
-By default `gh_cmd` is set to the default `gh` command. However, there may be
-cases where you want to override this with your custom wrapper.  Users of the
+By default `gh_cmd` and `glab_cmd` are set to the default commands. However, there may be
+cases where you want to override these with your custom wrapper. Users of the
 1Password op plugin will likely want to point to the wrapper command.
-(example: `op plugin run -- gh`)
+(example: `op plugin run -- gh` or `op plugin run -- glab`)
 
 ## License
 

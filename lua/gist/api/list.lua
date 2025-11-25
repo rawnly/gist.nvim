@@ -2,13 +2,9 @@ local core = require("gist.core.gh")
 
 local M = {}
 
-local function create_split_terminal(command)
+local function create_tab_terminal(command)
     local config = require("gist").config
-    if config.split_direction == "vertical" then
-        vim.cmd.vsplit()
-    else
-        vim.cmd.split()
-    end
+    vim.cmd.tabnew()
     local win = vim.api.nvim_get_current_win()
     local buf = vim.api.nvim_create_buf(false, true)
     vim.api.nvim_win_set_buf(win, buf)
@@ -97,7 +93,7 @@ function M.gists()
             command = { config.gh_cmd, "gist", "edit", gist.hash }
         end
 
-        local buf = create_split_terminal(command)
+        local buf = create_tab_terminal(command)
 
         local term_chan_id = vim.api.nvim_open_term(buf, {
             on_input = function(_, _, _, data)
@@ -110,7 +106,7 @@ function M.gists()
             vim.tbl_extend("force", {
                 on_stdout = function(_, data)
                     -- check if data is empty or contains only empty strings
-                    if not data or #data == 0 then
+                    if not data or #data == 0 or not vim.api.nvim_buf_is_valid(buf) then
                         return
                     end
 
@@ -170,7 +166,7 @@ function M.gists()
                 end,
                 on_stderr = function(_, data)
                     -- check if data is empty or contains only empty strings
-                    if not data or #data == 0 then
+                    if not data or #data == 0 or not vim.api.nvim_buf_is_valid(buf) then
                         return
                     end
 

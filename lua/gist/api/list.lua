@@ -3,40 +3,6 @@ local utils = require("gist.core.utils")
 
 local M = {}
 
-local function create_tab_terminal(command)
-    local config = require("gist").config
-    vim.cmd.tabnew()
-    local win = vim.api.nvim_get_current_win()
-    local buf = vim.api.nvim_create_buf(false, true)
-    vim.api.nvim_win_set_buf(win, buf)
-    vim.api.nvim_win_set_option(win, "number", false)
-    vim.api.nvim_win_set_option(win, "relativenumber", false)
-
-    -- create a representative command name for the buffer
-    local cmd_str
-    if type(command) == "table" then
-        cmd_str = table.concat(command, " ")
-    else
-        cmd_str = command
-    end
-    vim.api.nvim_buf_set_name(buf, ("term://%s/%s"):format(buf, cmd_str))
-    vim.keymap.set(
-        "t",
-        config.list.mappings.next_file,
-        "<Down>",
-        { buffer = buf }
-    )
-    vim.keymap.set(
-        "t",
-        config.list.mappings.prev_file,
-        "<Up>",
-        { buffer = buf }
-    )
-    vim.api.nvim_win_set_option(win, "winbar", "%=Use CTRL-{n,p} to cycle")
-    vim.cmd.startinsert()
-    return buf
-end
-
 local function format_gist(g)
     return string.format(
         "%s (%s) |%s 📃| [%s]",

@@ -66,7 +66,9 @@ You can also list your gists and edit their files on the fly.
 ```vim
     :GistsList
 ```
-- `:GistsList` will list all your gists and after you select one it will open a buffer to edit it
+- `:GistsList` will list all your gists and after you select one it will:
+  - If `use_multiplexer` is enabled and a multiplexer (tmux/zellij) is detected: opens the gist in a new multiplexer tab using `gh gist edit`
+  - Otherwise: opens the gist content in a read-only Neovim buffer using `gh gist view -r`
   - The default editor for modifying gists is configured as part of the gh cli usually in `~/.config/gh/config.yaml' or the system default
 
 ## Configuration
@@ -80,6 +82,7 @@ You can also list your gists and edit their files on the fly.
         split_direction = "vertical", -- default: "vertical" - set window split orientation when opening a gist ("vertical" or "horizontal")
         gh_cmd = "gh"
         list = {
+            use_multiplexer = false, -- Use terminal multiplexer (tmux/zellij) if detected for editing gists
             limit = nil, -- Limit the number of gists fetched (default: nil, uses gh default of 10)
             -- If there are multiple files in a gist you can scroll them,
             -- with vim-like bindings n/p next previous
@@ -95,6 +98,14 @@ By default `gh_cmd` is set to the default `gh` command. However, there may be
 cases where you want to override this with your custom wrapper.  Users of the
 1Password op plugin will likely want to point to the wrapper command.
 (example: `op plugin run -- gh`)
+
+### Multiplexer Support
+
+When `list.use_multiplexer` is set to `true`, the plugin will automatically detect if you're running inside a terminal multiplexer:
+- **tmux**: Opens gists in a new tmux window using `tmux new-window`
+- **zellij**: Opens gists in a new zellij tab using `zellij action new-tab`
+
+If no multiplexer is detected, gists will be opened in read-only Neovim buffers for viewing.
 
 ## License
 

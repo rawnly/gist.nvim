@@ -1,14 +1,11 @@
 local core = require("gist.core.gh")
+local utils = require("gist.core.utils")
 
 local M = {}
 
-local function create_split_terminal(command)
+local function create_tab_terminal(command)
     local config = require("gist").config
-    if config.split_direction == "vertical" then
-        vim.cmd.vsplit()
-    else
-        vim.cmd.split()
-    end
+    vim.cmd.tabnew()
     local win = vim.api.nvim_get_current_win()
     local buf = vim.api.nvim_create_buf(false, true)
     vim.api.nvim_win_set_buf(win, buf)
@@ -50,6 +47,33 @@ local function format_gist(g)
     )
 end
 
+local function create_readonly_buffer(gist)
+    vim.cmd.tabnew()
+    local buf = vim.api.nvim_create_buf(false, true)
+    local win = vim.api.nvim_get_current_win()
+    vim.api.nvim_win_set_buf(win, buf)
+    
+    -- Set buffer to be readonly
+    vim.api.nvim_buf_set_option(buf, "readonly", true)
+    vim.api.nvim_buf_set_option(buf, "modifiable", false)
+    vim.api.nvim_buf_set_name(buf, string.format("gist://%s/%s", gist.hash, gist.name))
+    
+    -- Set winbar
+    local winbar = string.format("%%=GIST `%s` [READ-ONLY]", gist.name)
+    vim.api.nvim_win_set_option(win, "winbar", winbar)
+    
+    return buf
+end
+
+local function fetch_gist_content(gist_hash)
+    local config = require("gist").config
+    local cmd_parts = vim.split(config.gh_cmd, " ")
+    local cmd = table.concat(cmd_parts, " ") .. " gist view -r " .. gist_hash
+    
+    local output = utils.exec(cmd)
+    return output
+end
+
 --- List user gists and edit them on the fly.
 function M.gists()
     local config = require("gist").config
@@ -79,141 +103,45 @@ function M.gists()
             return
         end
 
-        local job_id
+        -- Check if we should use multiplexer
+        local multiplexer = utils.detect_multiplexer()
+        if config.list.use_multiplexer and multiplexer then
+            -- handle command construction a little differently based on command
+            -- complexity.  there's probably a better way to do this, but this seems
+            -- reasonably robust.
+            local command
+            if config.gh_cmd:find(" ") then
+                -- for complex commands with spaces, use a shell to interpret it
+                command = {
+                    "sh",
+                    "-c",
+                    string.format("%s gist edit %s", config.gh_cmd, gist.hash),
+                }
+            else
+                -- for simple commands without spaces, use the array approach
+                command = { config.gh_cmd, "gist", "edit", gist.hash }
+            end
 
-        -- handle command construction a little differently based on command
-        -- complexity.  there's probably a better way to do this, but this seems
-        -- reasonably robust.
-        local command
-        if config.gh_cmd:find(" ") then
-            -- for complex commands with spaces, use a shell to interpret it
-            command = {
-                "sh",
-                "-c",
-                string.format("%s gist edit %s", config.gh_cmd, gist.hash),
-            }
-        else
-            -- for simple commands without spaces, use the array approach
-            command = { config.gh_cmd, "gist", "edit", gist.hash }
+            local mux_cmd = utils.create_multiplexer_command(multiplexer, command)
+            if mux_cmd then
+                vim.fn.system(mux_cmd)
+                print(string.format("Opening gist in %s tab", multiplexer))
+                return
+            end
         end
 
-        local buf = create_split_terminal(command)
-
-        local term_chan_id = vim.api.nvim_open_term(buf, {
-            on_input = function(_, _, _, data)
-                vim.api.nvim_chan_send(job_id, data)
-            end,
-        })
-
-        job_id = vim.fn.jobstart(
-            command,
-            vim.tbl_extend("force", {
-                on_stdout = function(_, data)
-                    -- check if data is empty or contains only empty strings
-                    if not data or #data == 0 then
-                        return
-                    end
-
-                    -- filter out empty trailing entries which are common in jobstart output
-                    local last_idx = #data
-                    while last_idx > 0 and data[last_idx] == "" do
-                        last_idx = last_idx - 1
-                    end
-
-                    if last_idx == 0 then
-                        return
-                    end -- All entries were empty
-
-                    -- create a new filtered table with only non-empty entries
-                    local filtered_data = {}
-                    for i = 1, last_idx do
-                        table.insert(filtered_data, data[i])
-                    end
-
-                    vim.api.nvim_chan_send(
-                        term_chan_id,
-                        table.concat(filtered_data, "\r\n") .. "\r\n"
-                    )
-
-                    local changed = vim.fn.bufnr() ~= buf
-                    if changed then
-                        vim.api.nvim_buf_set_option(
-                            vim.fn.bufnr(),
-                            "bufhidden",
-                            "wipe"
-                        )
-                        vim.api.nvim_buf_set_option(
-                            vim.fn.bufnr(),
-                            "swapfile",
-                            true
-                        )
-
-                        local winbar = ("%sGIST `%s`"):format("%=", gist.name)
-                        vim.api.nvim_win_set_option(
-                            vim.fn.win_getid(),
-                            "winbar",
-                            winbar
-                        )
-                    end
-                    if gist.files > 1 and changed then
-                        vim.api.nvim_create_autocmd({ "BufDelete" }, {
-                            buffer = vim.fn.bufnr(),
-                            group = vim.api.nvim_create_augroup(
-                                "gist_save",
-                                {}
-                            ),
-                            callback = function()
-                                vim.cmd.startinsert()
-                            end,
-                        })
-                    end
-                end,
-                on_stderr = function(_, data)
-                    -- check if data is empty or contains only empty strings
-                    if not data or #data == 0 then
-                        return
-                    end
-
-                    -- filter out empty trailing entries which are common in jobstart output
-                    local last_idx = #data
-                    while last_idx > 0 and data[last_idx] == "" do
-                        last_idx = last_idx - 1
-                    end
-
-                    if last_idx == 0 then
-                        return
-                    end -- All entries were empty
-
-                    -- create a new filtered table with only non-empty entries
-                    local filtered_data = {}
-                    for i = 1, last_idx do
-                        table.insert(filtered_data, data[i])
-                    end
-
-                    vim.api.nvim_chan_send(
-                        term_chan_id,
-                        table.concat(filtered_data, "\r\n") .. "\r\n"
-                    )
-                end,
-                on_exit = function(_, exit_code)
-                    if exit_code ~= 0 then
-                        vim.api.nvim_chan_send(
-                            term_chan_id,
-                            "\r\nCommand exited with code "
-                            .. exit_code
-                            .. "\r\n"
-                        )
-                    end
-
-                    -- Don't close window immediately on error to allow seeing the error
-                    local delay = exit_code ~= 0 and 3000 or 1000
-                    vim.defer_fn(function()
-                        vim.api.nvim_buf_delete(buf, { force = true })
-                    end, delay) -- give user a chance to see any error messages
-                end,
-                pty = true,
-            }, {})
-        )
+        -- Fallback: use read-only buffer with gist view
+        local content = fetch_gist_content(gist.hash)
+        if content then
+            local buf = create_readonly_buffer(gist)
+            -- Temporarily make buffer modifiable to set content
+            vim.api.nvim_buf_set_option(buf, "modifiable", true)
+            vim.api.nvim_buf_set_lines(buf, 0, -1, false, vim.split(content, "\n"))
+            vim.api.nvim_buf_set_option(buf, "modifiable", false)
+            print("Opened gist in read-only buffer")
+        else
+            print("Failed to fetch gist content")
+        end
     end)
 end
 

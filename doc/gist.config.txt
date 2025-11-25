@@ -6,6 +6,9 @@ DESCRIPTION
     The `:GistsList` command has mappings that allow you to cycle between files if a gist has multiple of them,
     you can also type to fuzzy find them.
     The mappings can be customized with the `config.list.mappings.{next_file, prev_file}` via the `setup()` function.
+    
+    When `list.use_multiplexer` is enabled, the plugin will automatically detect tmux or zellij and open gists in new multiplexer tabs.
+    If no multiplexer is detected, gists are opened in read-only Neovim buffers for viewing.
 
 OPTIONS
 	private = false, will set the privacy to `public` by default.
@@ -13,6 +16,7 @@ OPTIONS
     gh_cmd = "gh", allows the specification of gh wrappers which handle, auth, etc. defaults to "gh"
 	clipboard = "0", will set the clipboard to `+` by default, it is the unnamed_plus register `:h quoteplus`.
 	list = {
+        use_multiplexer = false, enables terminal multiplexer support (tmux/zellij) for editing gists. default false.
         limit = nil, limits the number of gists fetched. default nil (uses gh default of 10).
         next_file = "<C-n>",
         prev_file = "<C-p>",

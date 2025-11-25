@@ -1,17 +1,7 @@
-local core = require("gist.core.gh")
+local core = require("gist.core.services")
 local utils = require("gist.core.utils")
 
 local M = {}
-
-local function format_gist(g)
-    return string.format(
-        "%s (%s) |%s 📃| [%s]",
-        g.name, -- Gist name
-        g.hash, -- Gist hash
-        g.files, -- Gist files number
-        g.privacy == "public" and "➕" or "➖" -- Gist privacy setting (public/private)
-    )
-end
 
 local function create_readonly_buffer(gist)
     vim.cmd.tabnew()
@@ -39,15 +29,6 @@ local function create_readonly_buffer(gist)
     return buf
 end
 
-local function fetch_gist_content(gist_hash)
-    local config = require("gist").config
-    local cmd_parts = vim.split(config.gh_cmd, " ")
-    local cmd = table.concat(cmd_parts, " ") .. " gist view -r " .. gist_hash
-
-    local output = utils.exec(cmd)
-    return output
-end
-
 --- List user gists and edit them on the fly.
 function M.gists()
     local config = require("gist").config
@@ -64,7 +45,7 @@ function M.gists()
         return
     end
 
-    local list = core.list_gists()
+    local list = core.list()
     if #list == 0 then
         print(
             "No gists. You can create one from current buffer with `GistCreate`"
@@ -72,52 +53,35 @@ function M.gists()
         return
     end
 
-    local listPrompt = "Select a gist to edit"
+    local listPrompt = "Select a file to edit"
 
     if not has_mux or config.list.read_only then
-        listPrompt = "Select a gist to view (read-only)"
+        listPrompt = "Select a file to view (read-only)"
     end
 
     vim.ui.select(list, {
         prompt = listPrompt,
-        format_item = format_gist,
+        format_item = core.format,
     }, function(gist)
         if not gist then
             return
         end
 
-        function get_edit_cmd()
-            local command
-            if config.gh_cmd:find(" ") then
-                -- for complex commands with spaces, use a shell to interpret it
-                command = {
-                    "sh",
-                    "-c",
-                    string.format("%s gist edit %s", config.gh_cmd, gist.hash),
-                }
-            else
-                -- for simple commands without spaces, use the array approach
-                command = { config.gh_cmd, "gist", "edit", gist.hash }
-            end
-
-            return command
-        end
-
         -- Check if we should use multiplexer
         if has_mux and not config.list.read_only then
-            local command = get_edit_cmd()
+            local command = core.get_edit_cmd(gist.hash)
 
             local mux_cmd =
                 utils.create_multiplexer_command(multiplexer, command)
             if mux_cmd then
                 vim.fn.system(mux_cmd)
-                print(string.format("Opening gist in %s tab", multiplexer))
+                print(string.format("Opening in %s tab", multiplexer))
                 return
             end
         end
 
         -- Fallback: use read-only buffer with gist view
-        local content = fetch_gist_content(gist.hash)
+        local content = core.fetch_content(gist.hash)
         if content then
             local buf = create_readonly_buffer(gist)
             -- Temporarily make buffer modifiable to set content
@@ -130,9 +94,9 @@ function M.gists()
                 vim.split(content, "\n")
             )
             vim.api.nvim_buf_set_option(buf, "modifiable", false)
-            print("Opened gist in read-only buffer")
+            print("Opened in read-only buffer")
         else
-            print("Failed to fetch gist content")
+            print("Failed to fetch content")
         end
     end)
 end

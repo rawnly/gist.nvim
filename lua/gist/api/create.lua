@@ -1,4 +1,4 @@
-local core = require("gist.core.gh")
+local core = require("gist.core.services")
 local utils = require("gist.core.utils")
 
 local M = {}
@@ -29,7 +29,7 @@ local function create(content, ctx)
     local config = require("gist").config
     local details = get_details(ctx)
 
-    local url, err = core.create_gist(
+    local url, err = core.create(
         details.filename,
         content,
         details.description,

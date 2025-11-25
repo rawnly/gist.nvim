@@ -9,15 +9,15 @@ local M = {}
 -- @param private boolean Wether the Gist should be private
 -- @return string|nil The URL of the created Gist
 -- @return number|nil The error of the command
-function M.create_gist(filename, content, description, private)
+function M.create(filename, content, description, private)
     local public_flag = private and "" or "--public"
     description = vim.fn.shellescape(description)
 
-    local config = require("gist").config
+    local config = require("gist").config.platforms.github
     local cmd
 
-    -- split the gh_cmd into components to handle wrappers properly
-    local cmd_parts = vim.split(config.gh_cmd, " ")
+    -- split the cmd into components to handle wrappers properly
+    local cmd_parts = vim.split(config.cmd, " ")
     local base_cmd = table.concat(cmd_parts, " ")
 
     if content ~= nil then
@@ -63,14 +63,19 @@ end
 --- List all Github gists
 --
 -- @return [string]|nil The URLs of all the Gists
-function M.list_gists()
-    local config = require("gist").config
+function M.list()
+    local config = require("gist").config.platforms.github
+
     -- create a command that properly handles command wrappers
-    local cmd_parts = vim.split(config.gh_cmd, " ")
+    local cmd_parts = vim.split(config.cmd, " ")
     local cmd = table.concat(cmd_parts, " ") .. " gist list"
 
     -- Add limit if configured
-    if config.list.limit and type(config.list.limit) == "number" and config.list.limit > 0 then
+    if
+        config.list.limit
+        and type(config.list.limit) == "number"
+        and config.list.limit > 0
+    then
         cmd = cmd .. " --limit " .. math.floor(config.list.limit)
     end
 
@@ -97,6 +102,46 @@ function M.list_gists()
         end
         return list
     end
+end
+
+-- @param hash string The hash of the gist to edit
+function M.get_edit_cmd(hash)
+    local config = require("gist").config.platforms.github
+
+    local command
+    if config.cmd:find(" ") then
+        -- for complex commands with spaces, use a shell to interpret it
+        command = {
+            "sh",
+            "-c",
+            string.format("%s gist edit %s", config.cmd, hash),
+        }
+    else
+        -- for simple commands without spaces, use the array approach
+        command = { config.cmd, "gist", "edit", hash }
+    end
+
+    return command
+end
+
+-- @param hash string The hash of the gist to edit
+function M.fetch_content(hash)
+    local config = require("gist").config.platforms.github
+    local cmd_parts = vim.split(config.cmd, " ")
+    local cmd = table.concat(cmd_parts, " ") .. " gist view -r " .. hash
+
+    local output = utils.exec(cmd)
+    return output
+end
+
+function M.format(g)
+    return string.format(
+        "%s (%s) |%s 📃| [%s]",
+        g.name, -- Gist name
+        g.hash, -- Gist hash
+        g.files, -- Gist files number
+        g.privacy == "public" and "➕" or "➖" -- Gist privacy setting (public/private)
+    )
 end
 
 return M

@@ -4,11 +4,26 @@ M.config = {
     private = false,
     clipboard = "+",
     split_direction = "vertical",
-    gh_cmd = "gh",
+    platform = "github", -- Default backend to use
+    -- list is not supported by all the platforms
+    platforms = {
+        github = {
+            cmd = "gh",
+            list = {
+                limit = nil, -- Limit the number of gists fetched (default: nil, uses gh default of 10)
+                read_only = false, -- Opens the given gists in read-only buffers. This option is ignored if use_multiplexer is `false`
+            },
+        },
+        gitlab = {
+            cmd = "glab",
+        },
+        termbin = {
+            url = "termbin.com",
+            port = 9999,
+        },
+    },
     list = {
-        limit = nil, -- Limit the number of gists fetched (default: nil, uses gh default of 10)
         use_multiplexer = true, -- Use terminal multiplexer (tmux/zellij) if detected
-        read_only = false, -- Opens the given gists in read-only buffers. This option is ignored if use_multiplexer is `false`
         mappings = {
             next_file = "<C-n>",
             prev_file = "<C-p>",

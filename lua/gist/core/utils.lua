@@ -64,7 +64,7 @@ function M.exec(cmd, stdin)
 
     -- ensure command is properly formatted as a string
     local cmd_str = type(cmd) == "table" and table.concat(cmd, " ") or cmd
-    local pipe = io.popen(cmd_str .. "> " .. tmp, "w")
+    local pipe = io.popen(cmd_str .. " 2>&1 > " .. tmp, "w")
 
     if not pipe then
         return nil

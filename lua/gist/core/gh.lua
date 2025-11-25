@@ -71,7 +71,7 @@ function M.list_gists()
 
     -- Add limit if configured
     if config.list.limit and type(config.list.limit) == "number" and config.list.limit > 0 then
-        cmd = cmd .. " -L " .. math.floor(config.list.limit)
+        cmd = cmd .. " --limit " .. math.floor(config.list.limit)
     end
 
     local output = utils.exec(cmd)
@@ -84,13 +84,16 @@ function M.list_gists()
         for _, gist in ipairs(gists) do
             local g = vim.split(gist, "\t")
 
-            table.insert(list, {
-                hash = g[1],
-                name = g[2],
-                files = tonumber(g[3]:sub(1, 1)),
-                privacy = g[4],
-                date = g[5],
-            })
+            if #g >= 5 then
+                local files_str = g[3]:match("%d+")
+                table.insert(list, {
+                    hash = g[1],
+                    name = g[2],
+                    files = files_str and tonumber(files_str) or 0,
+                    privacy = g[4],
+                    date = g[5],
+                })
+            end
         end
         return list
     end

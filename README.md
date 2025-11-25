@@ -80,6 +80,7 @@ You can also list your gists and edit their files on the fly.
         split_direction = "vertical", -- default: "vertical" - set window split orientation when opening a gist ("vertical" or "horizontal")
         gh_cmd = "gh"
         list = {
+            limit = nil, -- Limit the number of gists fetched (default: nil, uses gh default of 10)
             -- If there are multiple files in a gist you can scroll them,
             -- with vim-like bindings n/p next previous
             mappings = {

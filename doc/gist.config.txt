@@ -9,11 +9,14 @@ DESCRIPTION
 
 OPTIONS
 	private = false, will set the privacy to `public` by default.
-  split_direction = "vertical", controls the split orientation when opening a gist. values: ["vertical" | "horizontal"]. default "vertical".
-  gh_cmd = "gh", allows the specification of gh wrappers which handle, auth, etc. defaults to "gh"
+    split_direction = "vertical", controls the split orientation when opening a gist. values: ["vertical" | "horizontal"]. default "vertical".
+    gh_cmd = "gh", allows the specification of gh wrappers which handle, auth, etc. defaults to "gh"
 	clipboard = "0", will set the clipboard to `+` by default, it is the unnamed_plus register `:h quoteplus`.
-    next_file = "<C-n>",
-    prev_file = "<C-p>",
+	list = {
+        limit = nil, limits the number of gists fetched. default nil (uses gh default of 10).
+        next_file = "<C-n>",
+        prev_file = "<C-p>",
+	}
 
 SEE ALSO
     :help gist

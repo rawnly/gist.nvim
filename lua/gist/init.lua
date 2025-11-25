@@ -6,6 +6,7 @@ M.config = {
     split_direction = "vertical",
     gh_cmd = "gh",
     list = {
+        limit = nil, -- Limit the number of gists fetched (default: nil, uses gh default of 10)
         mappings = {
             next_file = "<C-n>",
             prev_file = "<C-p>",

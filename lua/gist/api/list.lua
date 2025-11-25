@@ -1,14 +1,13 @@
 local core = require("gist.core.gh")
-local config = require("gist").config
 
 local M = {}
 
 local function create_split_terminal(command)
     local config = require("gist").config
     if config.split_direction == "vertical" then
-      vim.cmd.vsplit()
+        vim.cmd.vsplit()
     else
-      vim.cmd.split()
+        vim.cmd.split()
     end
     local win = vim.api.nvim_get_current_win()
     local buf = vim.api.nvim_create_buf(false, true)
@@ -87,11 +86,15 @@ function M.gists()
         -- reasonably robust.
         local command
         if config.gh_cmd:find(" ") then
-          -- for complex commands with spaces, use a shell to interpret it
-          command = {"sh", "-c", string.format("%s gist edit %s", config.gh_cmd, gist.hash)}
+            -- for complex commands with spaces, use a shell to interpret it
+            command = {
+                "sh",
+                "-c",
+                string.format("%s gist edit %s", config.gh_cmd, gist.hash),
+            }
         else
-          -- for simple commands without spaces, use the array approach
-          command = {config.gh_cmd, "gist", "edit", gist.hash}
+            -- for simple commands without spaces, use the array approach
+            command = { config.gh_cmd, "gist", "edit", gist.hash }
         end
 
         local buf = create_split_terminal(command)
@@ -107,7 +110,9 @@ function M.gists()
             vim.tbl_extend("force", {
                 on_stdout = function(_, data)
                     -- check if data is empty or contains only empty strings
-                    if not data or #data == 0 then return end
+                    if not data or #data == 0 then
+                        return
+                    end
 
                     -- filter out empty trailing entries which are common in jobstart output
                     local last_idx = #data
@@ -115,7 +120,9 @@ function M.gists()
                         last_idx = last_idx - 1
                     end
 
-                    if last_idx == 0 then return end -- All entries were empty
+                    if last_idx == 0 then
+                        return
+                    end -- All entries were empty
 
                     -- create a new filtered table with only non-empty entries
                     local filtered_data = {}
@@ -163,7 +170,9 @@ function M.gists()
                 end,
                 on_stderr = function(_, data)
                     -- check if data is empty or contains only empty strings
-                    if not data or #data == 0 then return end
+                    if not data or #data == 0 then
+                        return
+                    end
 
                     -- filter out empty trailing entries which are common in jobstart output
                     local last_idx = #data
@@ -171,7 +180,9 @@ function M.gists()
                         last_idx = last_idx - 1
                     end
 
-                    if last_idx == 0 then return end -- All entries were empty
+                    if last_idx == 0 then
+                        return
+                    end -- All entries were empty
 
                     -- create a new filtered table with only non-empty entries
                     local filtered_data = {}
@@ -188,7 +199,9 @@ function M.gists()
                     if exit_code ~= 0 then
                         vim.api.nvim_chan_send(
                             term_chan_id,
-                            "\r\nCommand exited with code " .. exit_code .. "\r\n"
+                            "\r\nCommand exited with code "
+                            .. exit_code
+                            .. "\r\n"
                         )
                     end
 

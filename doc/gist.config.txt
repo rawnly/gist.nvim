@@ -1,8 +1,9 @@
 *gist.config.txt*  GistCreate configuration
 
 DESCRIPTION
-    The `:GistCreate` command can be configured to avoid prompting the user for the privacy settings of the Gist and target clipboard.
-    This is done via the `setup()` function with the `config.clipboard` and `config.private`.
+    The plugin supports multiple platforms: GitHub, GitLab, and Termbin. The default platform is GitHub.
+    The `:GistCreate` command can be configured to avoid prompting the user for the privacy settings of the gist and target clipboard.
+    This is done via the `setup()` function with the `config.clipboard` and platform-specific settings.
     The `:GistsList` command has mappings that allow you to cycle between files if a gist has multiple of them,
     you can also type to fuzzy find them.
     The mappings can be customized with the `config.list.mappings.{next_file, prev_file}` via the `setup()` function.
@@ -11,16 +12,41 @@ DESCRIPTION
     If no multiplexer is detected, gists are opened in read-only Neovim buffers for viewing.
 
 OPTIONS
-	private = false, will set the privacy to `public` by default.
+	platform = "github", sets the default platform to use. values: ["github" | "gitlab" | "termbin"]. default "github".
     split_direction = "vertical", controls the split orientation when opening a gist. values: ["vertical" | "horizontal"]. default "vertical".
-    gh_cmd = "gh", allows the specification of gh wrappers which handle, auth, etc. defaults to "gh"
-	clipboard = "0", will set the clipboard to `+` by default, it is the unnamed_plus register `:h quoteplus`.
+	clipboard = "+", will set the clipboard to `+` by default, it is the unnamed_plus register `:h quoteplus`.
+	prompts = {
+        create = {
+            private = false, prompt for private/public when creating a gist. default false.
+            description = false, prompt for description when creating a gist. default false.
+            confirmation = false, prompt for confirmation when creating a gist. default false.
+        },
+    },
+    },
+	platforms = {
+        github = {
+            private = false, sets the privacy to `public` by default for GitHub.
+            cmd = "gh", allows the specification of gh wrappers which handle auth, etc. defaults to "gh".
+            list = {
+                limit = nil, limits the number of gists fetched. default nil (uses gh default of 10).
+                read_only = false, opens gists in read-only buffers. ignored if use_multiplexer is false. default false.
+            },
+        },
+        gitlab = {
+            cmd = "glab", command for GitLab CLI. defaults to "glab".
+            private = true, create personal snippets by default for GitLab.
+        },
+        termbin = {
+            url = "termbin.com", URL for Termbin service. default "termbin.com".
+            port = 9999, port for Termbin service. default 9999.
+        },
+    },
 	list = {
-        use_multiplexer = true, enables terminal multiplexer support (tmux/zellij) for editing gists. default false.
-        limit = nil, limits the number of gists fetched. default nil (uses gh default of 10).
-        read_only = false, Opens the given gists in read-only buffers. This option is ignored if use_multiplexer is `false`, default false
-        next_file = "<C-n>",
-        prev_file = "<C-p>",
+        use_multiplexer = true, enables terminal multiplexer support (tmux/zellij) for editing gists. default true.
+        mappings = {
+            next_file = "<C-n>",
+            prev_file = "<C-p>",
+        },
 	}
 
 SEE ALSO

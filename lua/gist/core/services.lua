@@ -5,12 +5,23 @@ local sourcehut = require("gist.core.sourcehut")
 
 local M = {}
 
+--- Get the currently configured platform
+--
+-- @return string The platform name (e.g., "github", "gitlab")
 local function get_platform()
     local platform = require("gist").config.platform
 
     return platform
 end
 
+--- Create a gist on the configured platform
+--
+-- @param filename string The filename for the gist
+-- @param content string|nil The content of the gist (optional)
+-- @param description string The description of the gist
+-- @param private boolean Whether the gist should be private
+-- @return string|nil The URL of the created gist
+-- @return number|nil Error code if creation failed
 function M.create(...)
     local platform = get_platform()
 
@@ -27,6 +38,10 @@ function M.create(...)
     end
 end
 
+--- Fetch the content of a gist
+--
+-- @param hash string The hash/ID of the gist
+-- @return string|nil The content of the gist
 function M.fetch_content(...)
     local platform = get_platform()
 
@@ -37,6 +52,10 @@ function M.fetch_content(...)
     end
 end
 
+--- Format gist information for display
+--
+-- @param g table Gist information table
+-- @return string|nil Formatted gist string
 function M.format(...)
     local platform = get_platform()
 
@@ -47,6 +66,10 @@ function M.format(...)
     end
 end
 
+--- Get the command to edit a gist
+--
+-- @param hash string The hash/ID of the gist to edit
+-- @return table|nil Command array for editing the gist
 function M.get_edit_cmd(...)
     local platform = get_platform()
 
@@ -57,6 +80,9 @@ function M.get_edit_cmd(...)
     end
 end
 
+--- List gists from the configured platform
+--
+-- @return table|nil Array of gist information tables
 function M.list()
     local platform = get_platform()
 
@@ -67,6 +93,10 @@ function M.list()
     end
 end
 
+--- Get details for creating a gist
+--
+-- @param ctx table Context containing description and public/private settings
+-- @return table Details with filename, description, and is_private fields
 function M.get_create_details(ctx)
     local platform = get_platform()
 

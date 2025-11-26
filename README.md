@@ -132,7 +132,7 @@ For Termbin, no command is needed as it uses direct HTTP.
 
 When `list.use_multiplexer` is set to `true`, the plugin will automatically detect if you're running inside a terminal multiplexer:
 - **tmux**: Opens gists in a new tmux window using `tmux new-window`
-- **zellij**: Opens gists in a new zellij tab using `zellij action new-tab`
+- **zellij**: Opens gists in a new zellij tab using `zellij run -i -c`
 
 If no multiplexer is detected, gists will be opened in read-only Neovim buffers for viewing.
 

@@ -1,7 +1,7 @@
 *gist.config.txt*  GistCreate configuration
 
 DESCRIPTION
-    The plugin supports multiple platforms: GitHub, GitLab, and Termbin. The default platform is GitHub.
+    The plugin supports multiple platforms: GitHub, GitLab, Termbin, and SourceHut. The default platform is GitHub.
     The `:GistCreate` command can be configured to avoid prompting the user for the privacy settings of the gist and target clipboard.
     This is done via the `setup()` function with the `config.clipboard` and platform-specific settings.
     The `:GistsList` command has mappings that allow you to cycle between files if a gist has multiple of them,
@@ -12,7 +12,7 @@ DESCRIPTION
     If no multiplexer is detected, gists are opened in read-only Neovim buffers for viewing.
 
 OPTIONS
-	platform = "github", sets the default platform to use. values: ["github" | "gitlab" | "termbin"]. default "github".
+	platform = "github", sets the default platform to use. values: ["github" | "gitlab" | "termbin" | "sourcehut"]. default "github".
 	clipboard = "+", will set the clipboard to `+` by default, it is the unnamed_plus register `:h quoteplus`.
 	prompts = {
         create = {
@@ -35,10 +35,13 @@ OPTIONS
             cmd = "glab", command for GitLab CLI. defaults to "glab".
             private = true, create personal snippets by default for GitLab.
         },
-        termbin = {
-            url = "termbin.com", URL for Termbin service. default "termbin.com".
-            port = 9999, port for Termbin service. default 9999.
-        },
+         termbin = {
+             url = "termbin.com", URL for Termbin service. default "termbin.com".
+             port = 9999, port for Termbin service. default 9999.
+         },
+         sourcehut = {
+             cmd = "hut", command for SourceHut CLI. defaults to "hut".
+         },
     },
 	list = {
         use_multiplexer = true, enables terminal multiplexer support (tmux/zellij) for editing gists. default true.

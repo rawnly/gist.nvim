@@ -1,6 +1,7 @@
 local gh = require("gist.core.gh")
 local termbin = require("gist.core.termbin")
 local gitlab = require("gist.core.gitlab")
+local sourcehut = require("gist.core.sourcehut")
 
 local M = {}
 
@@ -19,6 +20,8 @@ function M.create(...)
         return gitlab.create(...)
     elseif platform == "termbin" then
         return termbin.create(...)
+    elseif platform == "sourcehut" then
+        return sourcehut.create(...)
     else
         return nil
     end
@@ -73,6 +76,8 @@ function M.get_create_details(ctx)
         return termbin.get_create_details()
     elseif platform == "gitlab" then
         return gitlab.get_create_details(ctx)
+    elseif platform == "sourcehut" then
+        return sourcehut.get_create_details(ctx)
     else
         local prompts = require("gist").config.prompts.create
         local filename = vim.fn.expand("%:t")

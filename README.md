@@ -13,6 +13,7 @@ Depending on the platform you want to use:
 - **GitHub**: Install the [`gh` command-line tool](https://cli.github.com/) and configure it with your GitHub account.
 - **GitLab**: Install the [`glab` command-line tool](https://gitlab.com/gitlab-org/cli) and configure it with your GitLab account.
 - **Termbin**: No additional tools required, as it uses direct HTTP requests.
+- **SourceHut**: Install the [`hut` command-line tool](https://sr.ht/~emersion/hut/) and configure it with your SourceHut account.
 
 If you intend to use the `GistsList` command to list and edit all your gists (GitHub only), I suggest the `nvim-unception` plugin.
 
@@ -82,7 +83,7 @@ You can also list your gists and edit their files on the fly (GitHub only).
 
 ```lua
     require("gist").setup({
-        platform = "github", -- Default platform: "github", "gitlab", or "termbin"
+        platform = "github", -- Default platform: "github", "gitlab", "termbin", or "sourcehut"
         clipboard = "+", -- The registry to use for copying the gist URL
         prompts = {
             create = {
@@ -108,6 +109,9 @@ You can also list your gists and edit their files on the fly (GitHub only).
                 url = "termbin.com", -- URL for Termbin service
                 port = 9999,         -- Port for Termbin service
             },
+            sourcehut = {
+                cmd = "hut", -- Command for SourceHut CLI
+            },
         },
         list = {
             use_multiplexer = true, -- Use terminal multiplexer (tmux/zellij) if detected for editing gists
@@ -126,6 +130,8 @@ For GitHub, the `cmd` defaults to `gh`. You may want to override this with a cus
 For GitLab, `cmd` defaults to `glab`.
 
 For Termbin, no command is needed as it uses direct HTTP.
+
+For SourceHut, `cmd` defaults to `hut`.
 
 ### Multiplexer Support
 

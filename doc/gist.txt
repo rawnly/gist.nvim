@@ -1,7 +1,7 @@
 *gist.txt*  GistCreate plugin
 
 NAME
-    gist - Create gists on GitHub, GitLab, or Termbin
+    gist - Create gists on GitHub, GitLab, Termbin, or SourceHut
 
 SYNOPSIS
     :GistCreate

@@ -1,17 +1,5 @@
 local M = {}
 
-local function is_visual()
-    if
-        vim.fn.mode() ~= "v"
-        and vim.fn.mode() ~= "V"
-        and vim.fn.mode() ~= "<C-V>"
-    then
-        return false
-    end
-
-    return true
-end
-
 function M.get_current_selection(start_line, end_line)
     local bufnr = vim.api.nvim_get_current_buf()
 

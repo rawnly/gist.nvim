@@ -1,15 +1,20 @@
 # gist.nvim
 ![Showcase](gist.nvim.gif)
 
-`gist.nvim` is a Neovim plugin that allows you to create a GitHub Gist from the current file.
-The plugin uses the [`gh` command-line tool](https://cli.github.com/) to create the Gist and provides a simple interface for specifying the Gist's description and privacy settings.
+`gist.nvim` is a Neovim plugin that allows you to create gists on GitHub, GitLab, or Termbin from the current file.
+The plugin uses the respective command-line tools (`gh` for GitHub, `glab` for GitLab, or direct HTTP for Termbin) to create the gist and provides a simple interface for specifying the gist's description and privacy settings.
 
 ## Installation
 
 To use `gist.nvim`, you need to have Neovim installed on your system.
-You also need to have the `gh` command-line tool installed and configured with your GitHub account.
 
-If you intend to use the `GistsList` command to list and edit all your gists, I suggest the `nvim-unception` plugin.
+Depending on the platform you want to use:
+
+- **GitHub**: Install the [`gh` command-line tool](https://cli.github.com/) and configure it with your GitHub account.
+- **GitLab**: Install the [`glab` command-line tool](https://gitlab.com/gitlab-org/cli) and configure it with your GitLab account.
+- **Termbin**: No additional tools required, as it uses direct HTTP requests.
+
+If you intend to use the `GistsList` command to list and edit all your gists (GitHub only), I suggest the `nvim-unception` plugin.
 
 
 Once you have Neovim and gh installed, you can install `gist.nvim` using your favorite plugin manager.
@@ -45,8 +50,8 @@ use {
 
 ## Usage
 
-To create a Gist from the current file, use the `:GistCreate` command in Neovim.
-The plugin will prompt you for a description and whether the Gist should be private or public.
+To create a gist from the current file, use the `:GistCreate` command in Neovim.
+The plugin will prompt you for a description and whether the gist should be private or public (depending on the platform).
 
 ```vim
   :GistCreate [description] [public=true]
@@ -55,14 +60,14 @@ The plugin will prompt you for a description and whether the Gist should be priv
 - `:GistCreate` will create the gist from the current selection
 - `:GistCreateFromFile` will create the gist from the current file
 
-Both the commands accept the same options which are `[description=]` and `[public=true]`
+Both commands accept the same options: `[description=]` and `[public=true]`
 
 If you don't pass the `description` it will prompt to insert one later.
 If you pass `[public=true]` it won't prompt for privacy later.
 
-After you enter the description and privacy settings, the plugin ask for confirmation and will create the Gist using the gh command-line tool and copy the Gist's URL to the given clipboard registry.
+After you enter the description and privacy settings, the plugin will ask for confirmation and create the gist using the configured platform's tool, then copy the gist's URL to the given clipboard registry.
 
-You can also list your gists and edit their files on the fly.
+You can also list your gists and edit their files on the fly (GitHub only).
 ```vim
     :GistsList
 ```
@@ -73,18 +78,40 @@ You can also list your gists and edit their files on the fly.
 
 ## Configuration
 
-`gist.nvim` provides a few configuration options that you can with the `setup` function:
+`gist.nvim` provides configuration options via the `setup` function:
 
 ```lua
     require("gist").setup({
-        private = false, -- All gists will be private, you won't be prompted again
-        clipboard = "+", -- The registry to use for copying the Gist URL
+        platform = "github", -- Default platform: "github", "gitlab", or "termbin"
+        clipboard = "+", -- The registry to use for copying the gist URL
         split_direction = "vertical", -- default: "vertical" - set window split orientation when opening a gist ("vertical" or "horizontal")
-        gh_cmd = "gh"
+        prompts = {
+            create = {
+                private = false,      -- Prompt for private/public when creating a gist
+                description = false,  -- Prompt for description when creating a gist
+                confirmation = false, -- Prompt for confirmation when creating a gist
+            },
+        },
+        platforms = {
+            github = {
+                private = false, -- All GitHub gists will be public by default
+                cmd = "gh",     -- Command for GitHub CLI
+                list = {
+                    limit = nil,       -- Limit the number of gists fetched (default: nil, uses gh default of 10)
+                    read_only = false, -- Opens gists in read-only buffers. Ignored if use_multiplexer is false
+                },
+            },
+            gitlab = {
+                cmd = "glab",  -- Command for GitLab CLI
+                private = true, -- Create personal snippets by default
+            },
+            termbin = {
+                url = "termbin.com", -- URL for Termbin service
+                port = 9999,         -- Port for Termbin service
+            },
+        },
         list = {
             use_multiplexer = true, -- Use terminal multiplexer (tmux/zellij) if detected for editing gists
-            read_only = false, -- Opens the given gists in read-only buffers. This option is ignored if use_multiplexer is `false`
-            limit = nil, -- Limit the number of gists fetched (default: nil, uses gh default of 10)
             -- If there are multiple files in a gist you can scroll them,
             -- with vim-like bindings n/p next previous
             mappings = {
@@ -95,10 +122,11 @@ You can also list your gists and edit their files on the fly.
     })
 ```
 
-By default `gh_cmd` is set to the default `gh` command. However, there may be
-cases where you want to override this with your custom wrapper.  Users of the
-1Password op plugin will likely want to point to the wrapper command.
-(example: `op plugin run -- gh`)
+For GitHub, the `cmd` defaults to `gh`. You may want to override this with a custom wrapper, e.g., for 1Password users: `op plugin run -- gh`.
+
+For GitLab, `cmd` defaults to `glab`.
+
+For Termbin, no command is needed as it uses direct HTTP.
 
 ### Multiplexer Support
 

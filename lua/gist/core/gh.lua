@@ -9,15 +9,16 @@ local M = {}
 -- @param private boolean Wether the Gist should be private
 -- @return string|nil The URL of the created Gist
 -- @return number|nil The error of the command
-function M.create_gist(filename, content, description, private)
+function M.create(filename, content, description, private)
     local public_flag = private and "" or "--public"
     description = vim.fn.shellescape(description)
 
-    local config = require("gist").config
+    local config = require("gist").config.platforms.github
+    local prompts = require("gist").config.prompts.create
     local cmd
 
-    -- split the gh_cmd into components to handle wrappers properly
-    local cmd_parts = vim.split(config.gh_cmd, " ")
+    -- split the cmd into components to handle wrappers properly
+    local cmd_parts = vim.split(config.cmd, " ")
     local base_cmd = table.concat(cmd_parts, " ")
 
     if content ~= nil then
@@ -41,12 +42,14 @@ function M.create_gist(filename, content, description, private)
         )
     end
 
-    local ans =
-        vim.fn.input("Do you want to create gist " .. filename .. " (y/n)? ")
-    if ans ~= "y" then
-        vim.cmd.redraw()
-        vim.notify("Gist creation aborted", vim.log.levels.INFO)
-        return
+    if prompts.confirmation then
+        local ans = vim.fn.input(M.prompts.confirmation .. " (y/n): ")
+
+        if ans:lower() ~= "y" then
+            vim.cmd.redraw()
+            vim.notify("Gist creation aborted", vim.log.levels.INFO)
+            return
+        end
     end
 
     local output = utils.exec(cmd, content)
@@ -63,14 +66,19 @@ end
 --- List all Github gists
 --
 -- @return [string]|nil The URLs of all the Gists
-function M.list_gists()
-    local config = require("gist").config
+function M.list()
+    local config = require("gist").config.platforms.github
+
     -- create a command that properly handles command wrappers
-    local cmd_parts = vim.split(config.gh_cmd, " ")
+    local cmd_parts = vim.split(config.cmd, " ")
     local cmd = table.concat(cmd_parts, " ") .. " gist list"
 
     -- Add limit if configured
-    if config.list.limit and type(config.list.limit) == "number" and config.list.limit > 0 then
+    if
+        config.list.limit
+        and type(config.list.limit) == "number"
+        and config.list.limit > 0
+    then
         cmd = cmd .. " --limit " .. math.floor(config.list.limit)
     end
 
@@ -98,5 +106,82 @@ function M.list_gists()
         return list
     end
 end
+
+-- @param hash string The hash of the gist to edit
+function M.get_edit_cmd(hash)
+    local config = require("gist").config.platforms.github
+
+    local command
+    if config.cmd:find(" ") then
+        -- for complex commands with spaces, use a shell to interpret it
+        command = {
+            "sh",
+            "-c",
+            string.format("%s gist edit %s", config.cmd, hash),
+        }
+    else
+        -- for simple commands without spaces, use the array approach
+        command = { config.cmd, "gist", "edit", hash }
+    end
+
+    return command
+end
+
+-- @param hash string The hash of the gist to edit
+function M.fetch_content(hash)
+    local config = require("gist").config.platforms.github
+    local cmd_parts = vim.split(config.cmd, " ")
+    local cmd = table.concat(cmd_parts, " ") .. " gist view -r " .. hash
+
+    local output = utils.exec(cmd)
+    return output
+end
+
+function M.format(g)
+    return string.format(
+        "%s (%s) |%s 📃| [%s]",
+        g.name, -- Gist name
+        g.hash, -- Gist hash
+        g.files, -- Gist files number
+        g.privacy == "public" and "➕" or "➖" -- Gist privacy setting (public/private)
+    )
+end
+
+function M.get_create_details(ctx)
+    local config = require("gist").config.platforms.github
+    local prompts = require("gist").config.prompts.create
+
+    local filename = vim.fn.expand("%:t")
+    local description = ""
+    if prompts.description then
+        description = ctx.description
+            or vim.fn.input(M.prompts.description .. ": ")
+    end
+
+    local is_private
+
+    if ctx.public ~= nil then
+        is_private = not ctx.public
+    else
+        is_private = config.private
+        if prompts.private and not is_private then
+            local user_input = vim.fn.input(M.prompts.private .. " (y/n): ")
+
+            is_private = user_input:lower() == "y"
+        end
+    end
+
+    return {
+        filename = filename,
+        description = description,
+        is_private = is_private,
+    }
+end
+
+M.prompts = {
+    description = "Provide a description",
+    private = "Create a private Gist?",
+    confirmation = "Are you sure you want to create this Gist?",
+}
 
 return M

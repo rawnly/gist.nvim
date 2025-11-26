@@ -1,35 +1,13 @@
-local core = require("gist.core.gh")
+local core = require("gist.core.services")
 local utils = require("gist.core.utils")
 
 local M = {}
 
-local function get_details(ctx)
-    local config = require("gist").config
-
-    local filename = vim.fn.expand("%:t")
-    local description = ctx.description or vim.fn.input("Gist description: ")
-
-    local is_private
-
-    if ctx.public ~= nil then
-        is_private = not ctx.public
-    else
-        is_private = config.private
-            or vim.fn.input("Create a private Gist? (y/n): ") == "y"
-    end
-
-    return {
-        filename = filename,
-        description = description,
-        is_private = is_private,
-    }
-end
-
 local function create(content, ctx)
     local config = require("gist").config
-    local details = get_details(ctx)
+    local details = core.get_create_details(ctx)
 
-    local url, err = core.create_gist(
+    local url, err = core.create(
         details.filename,
         content,
         details.description,

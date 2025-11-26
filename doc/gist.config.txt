@@ -13,7 +13,6 @@ DESCRIPTION
 
 OPTIONS
 	platform = "github", sets the default platform to use. values: ["github" | "gitlab" | "termbin"]. default "github".
-    split_direction = "vertical", controls the split orientation when opening a gist. values: ["vertical" | "horizontal"]. default "vertical".
 	clipboard = "+", will set the clipboard to `+` by default, it is the unnamed_plus register `:h quoteplus`.
 	prompts = {
         create = {

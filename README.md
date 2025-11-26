@@ -50,14 +50,14 @@ use {
 
 ## Usage
 
-To create a gist from the current file, use the `:GistCreate` command in Neovim.
+To create a gist from the current file, use the `:GistCreateFromFile` command in Neovim.
 The plugin will prompt you for a description and whether the gist should be private or public (depending on the platform).
 
 ```vim
   :GistCreate [description] [public=true]
 ```
 
-- `:GistCreate` will create the gist from the current selection
+- `:GistCreate` will create the gist from the current selection or the entire buffer if no selection is made
 - `:GistCreateFromFile` will create the gist from the current file
 
 Both commands accept the same options: `[description=]` and `[public=true]`
@@ -73,7 +73,7 @@ You can also list your gists and edit their files on the fly (GitHub only).
 ```
 - `:GistsList` will list all your gists and after you select one it will:
   - If `use_multiplexer` is enabled and a multiplexer (tmux/zellij) is detected: opens the gist in a new multiplexer tab using `gh gist edit`
-  - Otherwise: opens the gist content in a read-only Neovim buffer using `gh gist view -r`
+  - Otherwise: opens the gist in a new tab with read-only content using `gh gist view -r`
   - The default editor for modifying gists is configured as part of the gh cli usually in `~/.config/gh/config.yaml' or the system default
 
 ## Configuration
@@ -84,7 +84,6 @@ You can also list your gists and edit their files on the fly (GitHub only).
     require("gist").setup({
         platform = "github", -- Default platform: "github", "gitlab", or "termbin"
         clipboard = "+", -- The registry to use for copying the gist URL
-        split_direction = "vertical", -- default: "vertical" - set window split orientation when opening a gist ("vertical" or "horizontal")
         prompts = {
             create = {
                 private = false,      -- Prompt for private/public when creating a gist

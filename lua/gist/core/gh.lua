@@ -14,6 +14,7 @@ function M.create(filename, content, description, private)
     description = vim.fn.shellescape(description)
 
     local config = require("gist").config.platforms.github
+    local prompts = require("gist").config.prompts.create
     local cmd
 
     -- split the cmd into components to handle wrappers properly
@@ -41,12 +42,14 @@ function M.create(filename, content, description, private)
         )
     end
 
-    local ans =
-        vim.fn.input("Do you want to create gist " .. filename .. " (y/n)? ")
-    if ans ~= "y" then
-        vim.cmd.redraw()
-        vim.notify("Gist creation aborted", vim.log.levels.INFO)
-        return
+    if prompts.confirmation then
+        local ans = vim.fn.input(M.prompts.confirmation .. " (y/n): ")
+
+        if ans:lower() ~= "y" then
+            vim.cmd.redraw()
+            vim.notify("Gist creation aborted", vim.log.levels.INFO)
+            return
+        end
     end
 
     local output = utils.exec(cmd, content)
@@ -151,7 +154,8 @@ function M.get_create_details(ctx)
     local filename = vim.fn.expand("%:t")
     local description = ""
     if prompts.description then
-        description = ctx.description or vim.fn.input("Provide a description: ")
+        description = ctx.description
+            or vim.fn.input(M.prompts.description .. ": ")
     end
 
     local is_private
@@ -161,7 +165,7 @@ function M.get_create_details(ctx)
     else
         is_private = config.private
         if prompts.private and not is_private then
-            local user_input = vim.fn.input("Create a personal Gist? (y/n): ")
+            local user_input = vim.fn.input(M.prompts.private .. " (y/n): ")
 
             is_private = user_input:lower() == "y"
         end
@@ -173,5 +177,11 @@ function M.get_create_details(ctx)
         is_private = is_private,
     }
 end
+
+M.prompts = {
+    description = "Provide a description",
+    private = "Create a private Gist?",
+    confirmation = "Are you sure you want to create this Gist?",
+}
 
 return M

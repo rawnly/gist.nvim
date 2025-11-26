@@ -46,6 +46,12 @@ function M.gists()
     end
 
     local list = core.list()
+
+    if list == nil then
+        print(string.format("Platform %s not supported", config.platform))
+        return
+    end
+
     if #list == 0 then
         print(
             "No gists. You can create one from current buffer with `GistCreate`"

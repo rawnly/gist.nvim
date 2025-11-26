@@ -6,9 +6,9 @@ M.config = {
     platform = "github", -- Default backend to use
     prompts = {
         create = {
-            private = true,      -- Prompt for private/public when creating an entry
-            description = true,  -- Prompt for description when creating an entry
-            confirmation = true, -- Prompt for confirmation when creating an entry
+            private = false, -- Prompt for private/public when creating an entry
+            description = false, -- Prompt for description when creating an entry
+            confirmation = false, -- Prompt for confirmation when creating an entry
         },
     },
     -- list is not supported by all the platforms
@@ -17,7 +17,7 @@ M.config = {
             private = false,
             cmd = "gh",
             list = {
-                limit = nil,       -- Limit the number of gists fetched (default: nil, uses gh default of 10)
+                limit = nil, -- Limit the number of gists fetched (default: nil, uses gh default of 10)
                 read_only = false, -- Opens the given gists in read-only buffers. This option is ignored if use_multiplexer is `false`
             },
         },
@@ -41,6 +41,19 @@ M.config = {
 
 function M.setup(opts)
     M.config = vim.tbl_deep_extend("force", M.config, opts or {})
+
+    -- Validate platform
+    local valid_platforms = { github = true, gitlab = true, termbin = true }
+    if not valid_platforms[M.config.platform] then
+        vim.notify(
+            "Gist: Invalid platform '"
+                .. tostring(M.config.platform)
+                .. "'. Falling back to 'github'.",
+            vim.log.levels.WARN
+        )
+        M.config.platform = "github"
+    end
+
     return M.config
 end
 

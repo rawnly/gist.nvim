@@ -20,7 +20,7 @@ function M.create(...)
     elseif platform == "termbin" then
         return termbin.create(...)
     else
-        error("Unsupported platform: " .. tostring(platform))
+        return nil
     end
 end
 
@@ -30,7 +30,7 @@ function M.fetch_content(...)
     if platform == "github" then
         return gh.fetch_content(...)
     else
-        error("Unsupported platform: " .. tostring(platform))
+        return nil
     end
 end
 
@@ -40,7 +40,7 @@ function M.format(...)
     if platform == "github" then
         return gh.format(...)
     else
-        error("Unsupported platform: " .. tostring(platform))
+        return nil
     end
 end
 
@@ -50,7 +50,7 @@ function M.get_edit_cmd(...)
     if platform == "github" then
         return gh.get_edit_cmd(...)
     else
-        error("Unsupported platform: " .. tostring(platform))
+        return nil
     end
 end
 
@@ -60,7 +60,7 @@ function M.list()
     if platform == "github" then
         return gh.list()
     else
-        error("Unsupported platform: " .. tostring(platform))
+        return nil
     end
 end
 
@@ -74,7 +74,20 @@ function M.get_create_details(ctx)
     elseif platform == "gitlab" then
         return gitlab.get_create_details(ctx)
     else
-        error("Unsupported platform: " .. tostring(platform))
+        local prompts = require("gist").config.prompts.create
+        local filename = vim.fn.expand("%:t")
+
+        local description = ""
+        if prompts.description then
+            description = ctx.description
+                or vim.fn.input("Provide a description: ")
+        end
+
+        return {
+            description = description,
+            filename = filename,
+            is_private = true,
+        }
     end
 end
 

@@ -59,7 +59,8 @@ function M.get_create_details(ctx)
 
     local description = ""
     if prompts.description then
-        description = ctx.description or vim.fn.input("Provide a description: ")
+        description = ctx.description
+            or vim.fn.input(M.prompts.description .. ": ")
     end
 
     local is_private
@@ -69,8 +70,7 @@ function M.get_create_details(ctx)
     else
         is_private = config.private
         if prompts.private and not is_private then
-            local user_input =
-                vim.fn.input("Create a personal Snippet? (y/n): ")
+            local user_input = vim.fn.input(M.prompts.private .. " (y/n): ")
 
             is_private = user_input:lower() == "y"
         end
@@ -82,5 +82,10 @@ function M.get_create_details(ctx)
         is_private = is_private,
     }
 end
+
+M.prompts = {
+    description = "Provide a description",
+    private = "Create a personal Snippet?",
+}
 
 return M

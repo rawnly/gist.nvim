@@ -1,29 +1,32 @@
 local utils = require("gist.core.utils")
+local gist = require("gist")
 
 local M = {}
 
--- @param filename string UNSUPPOTED
--- @param content string|nil UNSUPPOTED
--- @param description string UNSUPPOTED
--- @param private boolean UNSUPPOTED
-function M.create(_, content, _, _)
-    local config = require("gist").config.platforms.termbin
-    local cmd = string.format("nc %s %d", config.url, config.port)
+---@param filename string|nil UNSUPPOTED
+---@param content string|nil
+---@param description string UNSUPPOTED
+---@param private boolean UNSUPPOTED
+function M.create(filename, content, description, private)
+  ---@type Gist.Platforms.Termbin
+  local config = gist.config.platforms.termbin
 
-    local output = utils.exec(cmd, content)
+  local cmd = string.format("nc %s %d", config.url, config.port)
 
-    if vim.v.shell_error ~= 0 then
-        return output, vim.v.shell_error
-    end
+  local output = utils.exec(cmd, content)
 
-    if output == nil or output == "" then
-        return nil, "No output from termbin"
-    end
+  if vim.v.shell_error ~= 0 then
+    return output, vim.v.shell_error
+  end
 
-    local pattern = string.format("https?://%s/%%S+", config.url)
-    local url = output:match(pattern)
+  if output == nil or output == "" then
+    return nil, "No output from termbin"
+  end
 
-    return url, nil
+  local pattern = string.format("https?://%s/%%S+", config.url)
+  local url = output:match(pattern)
+
+  return url, nil
 end
 
 return M

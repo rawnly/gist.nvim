@@ -1,0 +1,43 @@
+M = {}
+
+local utils = require('gist.core.utils')
+local gist = require("gist")
+
+---@param content string
+---@param private boolean
+function M.create(_, content, _, private)
+  ---@type Gist.Platforms.0x0
+  local config = gist.config.platforms['0x0']
+
+  local filename = utils.write_tmp(content)
+  if not filename then
+    return
+  end
+
+  local cmd = {
+    "curl",
+    "-sS",
+    "-H", "User-Agent: gist.nvim",
+    "-F", string.format("file=@%s", filename),
+  }
+
+  if config.private or private then
+    table.insert(cmd, "-F")
+    table.insert(cmd, "secret=")
+  end
+
+  table.insert(cmd, config.url or "https://0x0.st")
+  local output = utils.system(cmd, "failed to curl")
+
+  if output == nil or output == "" then
+    return nil, "No output from gitlab"
+  end
+
+  local url = output[1]:gsub("%s+$", "")
+
+  os.remove(filename)
+
+  return url, nil
+end
+
+return M

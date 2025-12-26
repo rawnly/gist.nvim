@@ -2,8 +2,11 @@
 <p align="center">
     <em>A plugin that allows you to create a Gist (and more) from the current file</em>
 </p>
+<br />
+<p align="center">
+    <img src="gist.nvim.gif"/>
+</p>
 
-![screenshot](gist.nvim.gif)
 
 `gist.nvim` is a Neovim plugin that allows you to create gists on GitHub, GitLab, or Termbin from the current file.
 The plugin uses the respective command-line tools (`gh` for GitHub, `glab` for GitLab, or direct HTTP for Termbin and 0x0) to create the gist and provides a simple interface for specifying the gist's description and privacy settings.

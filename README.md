@@ -1,8 +1,12 @@
-# gist.nvim
-![Showcase](gist.nvim.gif)
+<h1 align="center">📜 gist.nvim</h1>
+<p align="center">
+    <em>A plugin that allows you to create a Gist (and more) from the current file</em>
+</p>
+
+![screenshot](gist.nvim.gif)
 
 `gist.nvim` is a Neovim plugin that allows you to create gists on GitHub, GitLab, or Termbin from the current file.
-The plugin uses the respective command-line tools (`gh` for GitHub, `glab` for GitLab, or direct HTTP for Termbin) to create the gist and provides a simple interface for specifying the gist's description and privacy settings.
+The plugin uses the respective command-line tools (`gh` for GitHub, `glab` for GitLab, or direct HTTP for Termbin and 0x0) to create the gist and provides a simple interface for specifying the gist's description and privacy settings.
 
 ## Installation
 
@@ -12,8 +16,9 @@ Depending on the platform you want to use:
 
 - **GitHub**: Install the [`gh` command-line tool](https://cli.github.com/) and configure it with your GitHub account.
 - **GitLab**: Install the [`glab` command-line tool](https://gitlab.com/gitlab-org/cli) and configure it with your GitLab account.
-- **Termbin**: No additional tools required, as it uses direct HTTP requests.
+- [**Termbin**](https://termbin.com): No additional tools required, as it uses direct HTTP requests.
 - **SourceHut**: Install the [`hut` command-line tool](https://sr.ht/~emersion/hut/) and configure it with your SourceHut account.
+- [**0x0.st**](https://0x0.st): No additional tools required, as it uses direct HTTP requests.
 
 If you intend to use the `GistsList` command to list and edit all your gists (GitHub only), I suggest the `nvim-unception` plugin.
 
@@ -109,6 +114,9 @@ You can also list your gists and edit their files on the fly (GitHub only).
                 url = "termbin.com", -- URL for Termbin service
                 port = 9999,         -- Port for Termbin service
             },
+            ['0x0'] = {
+                private = false
+            },
             sourcehut = {
                 cmd = "hut", -- Command for SourceHut CLI
             },
@@ -129,7 +137,7 @@ For GitHub, the `cmd` defaults to `gh`. You may want to override this with a cus
 
 For GitLab, `cmd` defaults to `glab`.
 
-For Termbin, no command is needed as it uses direct HTTP.
+For Termbin and 0x0, no command is needed as it uses direct HTTP.
 
 For SourceHut, `cmd` defaults to `hut`.
 

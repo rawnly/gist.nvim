@@ -24,7 +24,7 @@ function M.create(filename, content, description, private)
     cmd_parts[#cmd_parts + 1] = vim.fn.shellescape(filename)
   end
 
-  if config.visibility ~= "" then
+  if config.visibility and config.visibility ~= "" then
     cmd_parts[#cmd_parts + 1] = "-v"
     cmd_parts[#cmd_parts + 1] = config.visibility
   end
@@ -50,7 +50,7 @@ end
 ---@return CreateDetails
 function M.get_create_details(ctx)
   ---@type Gist.Prompts.Create
-  local prompts = gist.config.prompts.create
+  local prompts = gist.config.prompts and gist.config.prompts.create or {}
 
   local filename = vim.fn.expand("%:t")
 

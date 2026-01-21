@@ -59,7 +59,7 @@ function M.get_create_details(ctx)
   ---@type Gist.Platforms.Gitlab
   local config = gist.config.platforms.gitlab
   ---@type Gist.Prompts.Create
-  local prompts = gist.config.prompts.create
+  local prompts = gist.config.prompts and gist.config.prompts.create or {}
 
   local filename = vim.fn.expand("%:t")
 

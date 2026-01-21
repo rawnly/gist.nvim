@@ -17,7 +17,7 @@ function M.create(_, content, _, private)
   local cmd = {
     "curl",
     "-sS",
-    "-H", "User-Agent: gist.nvim",
+    "-H", "User-Agent: gist.nvim/1.0.5",
     "-F", string.format("file=@%s", filename),
   }
 

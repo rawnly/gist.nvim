@@ -32,8 +32,9 @@ end
 --- List user gists and edit them on the fly.
 function M.gists()
     local config = require("gist").config
+    local list_config = config.list or {}
     local multiplexer = utils.detect_multiplexer()
-    local has_mux = config.list.use_multiplexer and multiplexer
+    local has_mux = list_config.use_multiplexer and multiplexer
 
     if
         pcall(require, "unception")
@@ -64,7 +65,7 @@ function M.gists()
     local listPrompt =
         string.format("%s Select a file to edit", platform_prefix)
 
-    if not has_mux or config.list.read_only then
+    if not has_mux or list_config.read_only then
         listPrompt = string.format(
             "%s Select a file to view (read-only)",
             platform_prefix
@@ -80,7 +81,7 @@ function M.gists()
         end
 
         -- Check if we should use multiplexer
-        if has_mux and not config.list.read_only then
+        if has_mux and not list_config.read_only then
             local command = core.get_edit_cmd(gist.hash)
 
             local mux_cmd =

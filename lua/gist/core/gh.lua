@@ -17,7 +17,7 @@ function M.create(filename, content, description, private)
   ---@type Gist.Platforms.Github
   local config = gist.config.platforms.github
   ---@type Gist.Prompts.Create
-  local prompts = config.prompts.create
+  local prompts = config.prompts and config.prompts.create or {}
 
   local cmd
 
@@ -62,6 +62,10 @@ function M.create(filename, content, description, private)
     return output, vim.v.shell_error
   end
 
+  if not output then
+    return nil, "No output from gh"
+  end
+
   local url = utils.extract_gist_url(output)
 
   return url, nil
@@ -79,12 +83,13 @@ function M.list()
   local cmd = table.concat(cmd_parts, " ") .. " gist list"
 
   -- Add limit if configured
+  local list_config = config.list or {}
   if
-      config.list.limit
-      and type(config.list.limit) == "number"
-      and config.list.limit > 0
+      list_config.limit
+      and type(list_config.limit) == "number"
+      and list_config.limit > 0
   then
-    cmd = cmd .. " --limit " .. math.floor(config.list.limit)
+    cmd = cmd .. " --limit " .. math.floor(list_config.limit)
   end
 
   local output = utils.exec(cmd)
@@ -160,7 +165,7 @@ function M.get_create_details(ctx)
   local config = gist.config.platforms.github
 
   ---@type Gist.Prompts.Create
-  local prompts = config.prompts.create
+  local prompts = config.prompts and config.prompts.create or {}
 
   local filename = vim.fn.expand("%:t")
   local description = ""
@@ -171,8 +176,8 @@ function M.get_create_details(ctx)
 
   local is_private
 
-  if ctx.public ~= nil then
-    is_private = not ctx.public
+  if ctx.is_public ~= nil then
+    is_private = not ctx.is_public
   else
     is_private = config.private
     if prompts.private and not is_private then

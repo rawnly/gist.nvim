@@ -112,6 +112,8 @@ function M.get_create_details(ctx)
     return gitlab.get_create_details(ctx)
   elseif platform == "sourcehut" then
     return sourcehut.get_create_details(ctx)
+  elseif platform == "0x0" then
+    return x0.get_create_details()
   else
     --- @type Gist.Prompts.Create
     local prompts = gist.config.prompts.create

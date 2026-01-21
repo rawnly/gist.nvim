@@ -29,4 +29,14 @@ function M.create(filename, content, description, private)
   return url, nil
 end
 
+--- Get details for creating a paste (termbin doesn't support most options)
+---@return CreateDetails
+function M.get_create_details()
+  return {
+    filename = vim.fn.expand("%:t"),
+    description = "",
+    is_private = false,
+  }
+end
+
 return M

@@ -41,4 +41,12 @@ function M.create(_, content, _, private)
   return url, nil
 end
 
+function M.get_create_details()
+  return {
+    filename = vim.fn.expand("%:t"),
+    description = "",
+    is_private = gist.config.platforms["0x0"].private or false,
+  }
+end
+
 return M

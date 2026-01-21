@@ -45,7 +45,7 @@ function M.from_buffer(opts)
 
   return create(content, {
     description = description,
-    public = args.public,
+    is_public = args.public,
   })
 end
 
@@ -56,7 +56,7 @@ function M.from_file(opts)
 
   create(nil, {
     description = description,
-    public = args.public,
+    is_public = args.public,
   })
 end
 

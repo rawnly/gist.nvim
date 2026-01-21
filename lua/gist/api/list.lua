@@ -10,8 +10,8 @@ local function create_readonly_buffer(gist)
     vim.api.nvim_win_set_buf(win, buf)
 
     -- Set buffer to be readonly
-    vim.api.nvim_buf_set_option(buf, "readonly", true)
-    vim.api.nvim_buf_set_option(buf, "modifiable", false)
+    vim.api.nvim_set_option_value("readonly", true, { buf = buf })
+    vim.api.nvim_set_option_value("modifiable", false, { buf = buf })
     vim.api.nvim_buf_set_name(
         buf,
         string.format("gist://%s/%s", gist.hash, gist.name)
@@ -19,11 +19,11 @@ local function create_readonly_buffer(gist)
 
     -- Set winbar
     local winbar = string.format("%%=GIST `%s` [READ-ONLY]", gist.name)
-    vim.api.nvim_win_set_option(win, "winbar", winbar)
+    vim.api.nvim_set_option_value("winbar", winbar, { win = win })
 
     local extension = gist.name:match("^.+%.(.+)$")
     if extension then
-        vim.api.nvim_buf_set_option(buf, "filetype", extension)
+        vim.api.nvim_set_option_value("filetype", extension, { buf = buf })
     end
 
     return buf
@@ -97,7 +97,7 @@ function M.gists()
         if content then
             local buf = create_readonly_buffer(gist)
             -- Temporarily make buffer modifiable to set content
-            vim.api.nvim_buf_set_option(buf, "modifiable", true)
+            vim.api.nvim_set_option_value("modifiable", true, { buf = buf })
             vim.api.nvim_buf_set_lines(
                 buf,
                 0,
@@ -105,7 +105,7 @@ function M.gists()
                 false,
                 vim.split(content, "\n")
             )
-            vim.api.nvim_buf_set_option(buf, "modifiable", false)
+            vim.api.nvim_set_option_value("modifiable", false, { buf = buf })
             print("Opened in read-only buffer")
         else
             print("Failed to fetch content")

@@ -11,7 +11,7 @@ function M.create(_, content, _, private)
 
   local filename = utils.write_tmp(content)
   if not filename then
-    return
+    return nil, "Failed to create temporary file"
   end
 
   local cmd = {
@@ -30,7 +30,8 @@ function M.create(_, content, _, private)
   local output = utils.system(cmd, "failed to curl")
 
   if output == nil or output == "" then
-    return nil, "No output from gitlab"
+    os.remove(filename)
+    return nil, "No output from 0x0.st"
   end
 
   local url = output[1]:gsub("%s+$", "")

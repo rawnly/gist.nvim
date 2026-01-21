@@ -15,16 +15,19 @@ local function create(content, ctx)
     details.description,
     details.is_private
   )
-  if not url then
+
+  if err ~= nil then
+    vim.notify("Error creating Gist: " .. tostring(err), vim.log.levels.ERROR)
     return
   end
 
-  if err ~= nil then
-    vim.notify("Error creating Gist: " .. err, vim.log.levels.ERROR)
-  else
-    vim.notify("URL (copied to clipboard): " .. url, vim.log.levels.INFO)
-    vim.fn.setreg(config.clipboard, url)
+  if not url then
+    vim.notify("Error creating Gist: no URL returned", vim.log.levels.ERROR)
+    return
   end
+
+  vim.notify("URL (copied to clipboard): " .. url, vim.log.levels.INFO)
+  vim.fn.setreg(config.clipboard, url)
 end
 
 --- Creates a Gist from the current selection

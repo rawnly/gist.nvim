@@ -31,7 +31,14 @@ end
 
 --- List user gists and edit them on the fly.
 function M.gists()
-    local config = require("gist").config
+    local gist = require("gist")
+
+    if not gist.is_initialized() then
+        vim.notify("gist.nvim: setup() must be called before using this plugin", vim.log.levels.ERROR)
+        return
+    end
+
+    local config = gist.config
     local list_config = config.list or {}
     local multiplexer = utils.detect_multiplexer()
     local has_mux = list_config.use_multiplexer and multiplexer

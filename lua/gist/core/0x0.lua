@@ -27,9 +27,14 @@ function M.create(_, content, _, private)
   end
 
   table.insert(cmd, config.url or "https://0x0.st")
-  local output = utils.system(cmd, "failed to curl")
 
-  if output == nil or output == "" then
+  local ok, output = pcall(utils.system, cmd, "failed to curl")
+  if not ok then
+    os.remove(filename)
+    return nil, tostring(output)
+  end
+
+  if output == nil or #output == 0 or output[1] == "" then
     os.remove(filename)
     return nil, "No output from 0x0.st"
   end

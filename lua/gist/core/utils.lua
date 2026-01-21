@@ -61,29 +61,24 @@ function M.write_tmp(content)
   return filename
 end
 
+--- Execute a shell command with optional stdin
+---@param cmd string|string[] Command to execute
+---@param stdin string? Optional input to pass to the command
+---@return string? output Command output
+---@return number exit_code Exit code (0 = success)
 function M.exec(cmd, stdin)
-  -- NOTE: use the following only locally
-  -- print(string.format("Executing: %s", cmd))
-  local tmp = os.tmpname()
-
-  -- ensure command is properly formatted as a string
   local cmd_str = type(cmd) == "table" and table.concat(cmd, " ") or cmd
-  local pipe = io.popen(cmd_str .. " 2>&1 > " .. tmp, "w")
 
-  if not pipe then
-    return nil
-  end
-
+  local output
   if stdin then
-    pipe:write(stdin)
+    output = vim.fn.system(cmd_str, stdin)
+  else
+    output = vim.fn.system(cmd_str)
   end
 
-  pipe:close()
+  local exit_code = vim.v.shell_error
 
-  local output = read_file(tmp)
-  os.remove(tmp)
-
-  return output
+  return output, exit_code
 end
 
 function M.extract_gist_url(output)

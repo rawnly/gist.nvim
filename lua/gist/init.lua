@@ -2,6 +2,14 @@ local utils = require("gist.utils")
 
 local M = {}
 
+M._initialized = false
+
+--- Check if setup() has been called
+---@return boolean
+function M.is_initialized()
+  return M._initialized
+end
+
 ---@alias Gist.Platform "github" | "gitlab" | "0x0" | "termbin" | "sourcehut"
 
 ---@class Gist.Prompts.Create
@@ -137,6 +145,8 @@ function M.setup(opts)
     )
     M.config.platform = "github"
   end
+
+  M._initialized = true
 
   return M.config
 end

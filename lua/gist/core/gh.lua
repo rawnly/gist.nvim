@@ -56,10 +56,10 @@ function M.create(filename, content, description, private)
     end
   end
 
-  local output = utils.exec(cmd, content)
+  local output, exit_code = utils.exec(cmd, content)
 
-  if vim.v.shell_error ~= 0 then
-    return output, vim.v.shell_error
+  if exit_code ~= 0 then
+    return output, exit_code
   end
 
   if not output then

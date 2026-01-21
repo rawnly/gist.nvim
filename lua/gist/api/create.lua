@@ -6,7 +6,14 @@ local M = {}
 ---@param content string
 ---@param ctx CreateContext
 local function create(content, ctx)
-  local config = require("gist").config
+  local gist = require("gist")
+
+  if not gist.is_initialized() then
+    vim.notify("gist.nvim: setup() must be called before using this plugin", vim.log.levels.ERROR)
+    return
+  end
+
+  local config = gist.config
   local details = core.get_create_details(ctx)
 
   local url, err = core.create(

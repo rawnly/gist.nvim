@@ -21,7 +21,8 @@ Depending on the platform you want to use:
 - **GitLab**: Install the [`glab` command-line tool](https://gitlab.com/gitlab-org/cli) and configure it with your GitLab account.
 - [**Termbin**](https://termbin.com): No additional tools required, as it uses direct HTTP requests.
 - **SourceHut**: Install the [`hut` command-line tool](https://sr.ht/~emersion/hut/) and configure it with your SourceHut account.
-- [**0x0.st**](https://0x0.st): No additional tools required, as it uses direct HTTP requests.
+- [**0x0.st**](https://0x0.st): No additional tools required, as it uses direct HTTP requests (curl).
+- [PasteCN](https://pastecn.com): No additional tools required, as it uses direct HTTP requests (curl).
 
 If you intend to use the `GistsList` command to list and edit all your gists (GitHub only), I suggest the `nvim-unception` plugin.
 
@@ -117,8 +118,13 @@ You can also list your gists and edit their files on the fly (GitHub only).
                 url = "termbin.com", -- URL for Termbin service
                 port = 9999,         -- Port for Termbin service
             },
-            ['0x0'] = {
-                private = false
+            ["0x0"] = {
+                private = false,
+            },
+            pastecn = {
+                private = false,
+                url = "https://pastecn.com",
+                type = "file",
             },
             sourcehut = {
                 cmd = "hut", -- Command for SourceHut CLI
@@ -140,7 +146,7 @@ For GitHub, the `cmd` defaults to `gh`. You may want to override this with a cus
 
 For GitLab, `cmd` defaults to `glab`.
 
-For Termbin and 0x0, no command is needed as it uses direct HTTP.
+For PasteCN, Termbin and 0x0, no command is needed as it uses direct HTTP.
 
 For SourceHut, `cmd` defaults to `hut`.
 

@@ -35,13 +35,21 @@ OPTIONS
             cmd = "glab", command for GitLab CLI. defaults to "glab".
             private = true, create personal snippets by default for GitLab.
         },
-         termbin = {
+        termbin = {
              url = "termbin.com", URL for Termbin service. default "termbin.com".
              port = 9999, port for Termbin service. default 9999.
-         },
-         sourcehut = {
+        },
+        sourcehut = {
              cmd = "hut", command for SourceHut CLI. defaults to "hut".
-         },
+        },
+        ["0x0"] = {
+            private = false,
+        },
+        pastecn = {
+            private = false,
+            url = "https://pastecn.com",
+            type = "file",
+        },
     },
 	list = {
         use_multiplexer = true, enables terminal multiplexer support (tmux/zellij) for editing gists. default true.

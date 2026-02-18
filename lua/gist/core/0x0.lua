@@ -9,6 +9,10 @@ function M.create(_, content, _, private)
   ---@type Gist.Platforms.0x0
   local config = gist.config.platforms['0x0']
 
+  if content == nil then
+    content = utils.read_current_buffer_content()
+  end
+
   local filename = utils.write_tmp(content)
   if not filename then
     return nil, "Failed to create temporary file"

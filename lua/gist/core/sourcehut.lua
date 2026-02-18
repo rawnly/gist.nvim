@@ -16,6 +16,10 @@ function M.create(filename, content, description, private)
   local config = gist.config.platforms.sourcehut
   local cmd_parts = vim.split(config.cmd, " ")
 
+  if content == nil then
+    content = utils.read_current_buffer_content()
+  end
+
   cmd_parts[#cmd_parts + 1] = "paste"
   cmd_parts[#cmd_parts + 1] = "create"
 

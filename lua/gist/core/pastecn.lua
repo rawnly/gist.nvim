@@ -18,8 +18,7 @@ function M.create(filename, content, description, private)
 
     -- When content is nil (from_file), read the current buffer
     if content == nil then
-        local lines = utils.read_buffer(vim.api.nvim_get_current_buf())
-        content = table.concat(lines, "\n")
+        content = utils.read_current_buffer_content()
     end
 
     local payload = {

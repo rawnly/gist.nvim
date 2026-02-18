@@ -137,6 +137,11 @@ function M.read_buffer(bufnr)
   return vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
 end
 
+function M.read_current_buffer_content()
+  local lines = M.read_buffer(vim.api.nvim_get_current_buf())
+  return table.concat(lines, "\n")
+end
+
 --- executes the given command
 ---@param cmd string[]
 ---@param err string

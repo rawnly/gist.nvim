@@ -11,6 +11,10 @@ function M.create(filename, content, description, private)
   ---@type Gist.Platforms.Termbin
   local config = gist.config.platforms.termbin
 
+  if content == nil then
+    content = utils.read_current_buffer_content()
+  end
+
   local cmd = string.format("nc %s %d", config.url, config.port)
 
   local output, exit_code = utils.exec(cmd, content)

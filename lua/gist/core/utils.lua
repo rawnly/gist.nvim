@@ -82,7 +82,7 @@ function M.exec(cmd, stdin)
 end
 
 function M.extract_gist_url(output)
-    local pattern = "https://gist.github.com/%S+"
+    local pattern = "https://gist%.%S+"
 
     return output:match(pattern)
 end

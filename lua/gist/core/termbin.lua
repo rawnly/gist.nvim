@@ -35,9 +35,9 @@ end
 
 --- Get details for creating a paste (termbin doesn't support most options)
 ---@return CreateDetails
-function M.get_create_details()
+function M.get_create_details(ctx)
     return {
-        filename = vim.fn.expand("%:t"),
+        filename = utils.resolve_filename(ctx and ctx.filename),
         description = "",
         is_private = false,
     }

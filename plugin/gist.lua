@@ -1,13 +1,13 @@
 local gist = require("gist.api")
 
 local complete = function()
-    return { "description=", "public=" }
+    return { "description=", "filename=", "public=" }
 end
 
 vim.api.nvim_create_user_command("GistCreate", function(args)
     gist.create_from_buffer(args)
 end, {
-    nargs = "?",
+    nargs = "*",
     desc = "Create a Gist from the current buffer selection.",
     range = true,
     complete = complete,
@@ -16,7 +16,7 @@ end, {
 vim.api.nvim_create_user_command("GistCreateFromFile", function(args)
     gist.create_from_file(args)
 end, {
-    nargs = "?",
+    nargs = "*",
     desc = "Create a Gist from the current buffer.",
     range = false,
     complete = complete,

@@ -52,9 +52,9 @@ function M.create(_, content, _, private)
     return url, nil
 end
 
-function M.get_create_details()
+function M.get_create_details(ctx)
     return {
-        filename = vim.fn.expand("%:t"),
+        filename = utils.resolve_filename(ctx and ctx.filename),
         description = "",
         is_private = gist.config.platforms["0x0"].private or false,
     }

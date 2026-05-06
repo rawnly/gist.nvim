@@ -87,24 +87,45 @@ function M.extract_gist_url(output)
     return output:match(pattern)
 end
 
--- @param args string
-function M.parseArgs(args)
-    -- parse args as key=value
+--- Parse `key=value` command arguments. Accepts Neovim's `opts.fargs` so
+--- quoted/escaped values are preserved by the command parser. Splits each arg
+--- on the first `=` only, so values may themselves contain `=`.
+---@param fargs string[]
+function M.parseArgs(fargs)
     local parsed = {}
 
-    for _, arg in ipairs(vim.split(args, " ", {})) do
-        local key, value = unpack(vim.split(arg, "=", { plain = true }))
+    for _, arg in ipairs(fargs) do
+        local eq = arg:find("=", 1, true)
+        if eq then
+            local key = arg:sub(1, eq - 1)
+            local value = arg:sub(eq + 1)
 
-        if value == "true" then
-            value = true
-        elseif value == "false" then
-            value = false
+            if value == "true" then
+                value = true
+            elseif value == "false" then
+                value = false
+            end
+
+            parsed[key] = value
         end
-
-        parsed[key] = value
     end
 
     return parsed
+end
+
+---@param filename string?
+---@return string
+function M.resolve_filename(filename)
+    if filename ~= nil and filename ~= "" then
+        return filename
+    end
+
+    filename = vim.fn.expand("%:t")
+    if filename ~= nil and filename ~= "" then
+        return filename
+    end
+
+    return "untitled"
 end
 
 function M.detect_multiplexer()

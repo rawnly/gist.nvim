@@ -64,13 +64,15 @@ To create a gist from the current file, use the `:GistCreateFromFile` command in
 The plugin will prompt you for a description and whether the gist should be private or public (depending on the platform).
 
 ```vim
-  :GistCreate [description] [public=true]
+  :GistCreate [description] [filename=example.lua] [public=true]
 ```
 
 - `:GistCreate` will create the gist from the current selection or the entire buffer if no selection is made
 - `:GistCreateFromFile` will create the gist from the current file
 
-Both commands accept the same options: `[description=]` and `[public=true]`
+Both commands accept the same options: `[description=]`, `[filename=]`, and `[public=true]`
+
+When the current buffer has no filename, `:GistCreate` will use the buffer contents directly and default the filename to `untitled` unless you pass `filename=` explicitly.
 
 If you don't pass the `description` it will prompt to insert one later.
 If you pass `[public=true]` it won't prompt for privacy later.

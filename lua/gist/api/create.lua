@@ -3,6 +3,20 @@ local utils = require("gist.core.utils")
 
 local M = {}
 
+---@param opts table
+---@param args table
+---@return string?
+local function get_description(opts, args)
+    if args.description ~= nil then
+        return args.description
+    end
+
+    local first_arg = opts.fargs[1]
+    if first_arg ~= nil and not first_arg:find("=", 1, true) then
+        return first_arg
+    end
+end
+
 ---@param content string
 ---@param ctx CreateContext
 local function create(content, ctx)
@@ -46,29 +60,33 @@ end
 --- Creates a Gist from the current selection
 function M.from_buffer(opts)
     local content = nil
-    local args = utils.parseArgs(opts.args)
+    local args = utils.parseArgs(opts.fargs)
 
     local start_line = opts.line1
     local end_line = opts.line2
-    local description = opts.fargs[1]
+    local description = get_description(opts, args)
 
-    if start_line ~= end_line then
+    if opts.range > 0 then
         content = utils.get_current_selection(start_line, end_line)
+    else
+        content = utils.read_current_buffer_content()
     end
 
     return create(content, {
         description = description,
+        filename = args.filename,
         is_public = args.public,
     })
 end
 
 --- Creates a Gist from the current file.
 function M.from_file(opts)
-    local args = utils.parseArgs(opts.args)
-    local description = opts.fargs[1]
+    local args = utils.parseArgs(opts.fargs)
+    local description = get_description(opts, args)
 
     create(nil, {
         description = description,
+        filename = args.filename,
         is_public = args.public,
     })
 end

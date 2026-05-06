@@ -1,3 +1,4 @@
+local utils = require("gist.core.utils")
 local gh = require("gist.core.gh")
 local termbin = require("gist.core.termbin")
 local gitlab = require("gist.core.gitlab")
@@ -110,19 +111,19 @@ function M.get_create_details(ctx)
     if platform == "github" then
         return gh.get_create_details(ctx)
     elseif platform == "termbin" then
-        return termbin.get_create_details()
+        return termbin.get_create_details(ctx)
     elseif platform == "gitlab" then
         return gitlab.get_create_details(ctx)
     elseif platform == "sourcehut" then
         return sourcehut.get_create_details(ctx)
     elseif platform == "0x0" then
-        return x0.get_create_details()
+        return x0.get_create_details(ctx)
     elseif platform == "pastecn" then
         return pastecn.get_create_details(ctx)
     else
         --- @type Gist.Prompts.Create
         local prompts = gist.config.prompts.create
-        local filename = vim.fn.expand("%:t")
+        local filename = utils.resolve_filename(ctx.filename)
 
         local description = ""
         if prompts.description then

@@ -1,0 +1,6 @@
+[tools]
+stylua = "latest"
+typos = "latest"
+
+[tasks.fmt]
+run = "find . -name '*.lua' | xargs stylua"

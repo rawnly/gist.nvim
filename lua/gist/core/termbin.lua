@@ -8,39 +8,39 @@ local M = {}
 ---@param description string UNSUPPOTED
 ---@param private boolean UNSUPPOTED
 function M.create(filename, content, description, private)
-  ---@type Gist.Platforms.Termbin
-  local config = gist.config.platforms.termbin
+    ---@type Gist.Platforms.Termbin
+    local config = gist.config.platforms.termbin
 
-  if content == nil then
-    content = utils.read_current_buffer_content()
-  end
+    if content == nil then
+        content = utils.read_current_buffer_content()
+    end
 
-  local cmd = string.format("nc %s %d", config.url, config.port)
+    local cmd = string.format("nc %s %d", config.url, config.port)
 
-  local output, exit_code = utils.exec(cmd, content)
+    local output, exit_code = utils.exec(cmd, content)
 
-  if exit_code ~= 0 then
-    return output, exit_code
-  end
+    if exit_code ~= 0 then
+        return output, exit_code
+    end
 
-  if output == nil or output == "" then
-    return nil, "No output from termbin"
-  end
+    if output == nil or output == "" then
+        return nil, "No output from termbin"
+    end
 
-  local pattern = string.format("https?://%s/%%S+", config.url)
-  local url = output:match(pattern)
+    local pattern = string.format("https?://%s/%%S+", config.url)
+    local url = output:match(pattern)
 
-  return url, nil
+    return url, nil
 end
 
 --- Get details for creating a paste (termbin doesn't support most options)
 ---@return CreateDetails
 function M.get_create_details()
-  return {
-    filename = vim.fn.expand("%:t"),
-    description = "",
-    is_private = false,
-  }
+    return {
+        filename = vim.fn.expand("%:t"),
+        description = "",
+        is_private = false,
+    }
 end
 
 return M

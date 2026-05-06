@@ -34,7 +34,10 @@ function M.gists()
     local gist = require("gist")
 
     if not gist.is_initialized() then
-        vim.notify("gist.nvim: setup() must be called before using this plugin", vim.log.levels.ERROR)
+        vim.notify(
+            "gist.nvim: setup() must be called before using this plugin",
+            vim.log.levels.ERROR
+        )
         return
     end
 

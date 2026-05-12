@@ -87,21 +87,78 @@ function M.extract_gist_url(output)
     return output:match(pattern)
 end
 
--- @param args string
-function M.parseArgs(args)
-    -- parse args as key=value
-    local parsed = {}
+--- Tokenize a command-line style string into argv-like tokens, honoring
+--- single/double quotes and backslash escapes. Quoted regions may contain
+--- spaces; surrounding quotes are stripped from the resulting token.
+---@param s string
+---@return string[]
+local function tokenize(s)
+    local tokens = {}
+    local buf = {}
+    local in_single, in_double = false, false
+    local has_token = false
+    local i = 1
+    local len = #s
 
-    for _, arg in ipairs(vim.split(args, " ", {})) do
-        local key, value = unpack(vim.split(arg, "=", { plain = true }))
+    while i <= len do
+        local c = s:sub(i, i)
 
-        if value == "true" then
-            value = true
-        elseif value == "false" then
-            value = false
+        if c == "\\" and i < len then
+            local nxt = s:sub(i + 1, i + 1)
+            if in_single then
+                buf[#buf + 1] = c
+            else
+                buf[#buf + 1] = nxt
+                i = i + 1
+            end
+            has_token = true
+        elseif c == "'" and not in_double then
+            in_single = not in_single
+            has_token = true
+        elseif c == '"' and not in_single then
+            in_double = not in_double
+            has_token = true
+        elseif (c == " " or c == "\t") and not in_single and not in_double then
+            if has_token then
+                tokens[#tokens + 1] = table.concat(buf)
+                buf = {}
+                has_token = false
+            end
+        else
+            buf[#buf + 1] = c
+            has_token = true
         end
 
-        parsed[key] = value
+        i = i + 1
+    end
+
+    if has_token then
+        tokens[#tokens + 1] = table.concat(buf)
+    end
+
+    return tokens
+end
+
+--- Parse `key=value` arguments. Values may be quoted with single or double
+--- quotes to include spaces, e.g. `description="quick note"`.
+---@param args string
+function M.parseArgs(args)
+    local parsed = {}
+
+    for _, arg in ipairs(tokenize(args)) do
+        local eq = arg:find("=", 1, true)
+        if eq then
+            local key = arg:sub(1, eq - 1)
+            local value = arg:sub(eq + 1)
+
+            if value == "true" then
+                value = true
+            elseif value == "false" then
+                value = false
+            end
+
+            parsed[key] = value
+        end
     end
 
     return parsed
@@ -135,6 +192,26 @@ end
 
 function M.read_buffer(bufnr)
     return vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
+end
+
+--- Resolve the filename to use for a gist.
+--- Prefers an explicit override, then the current buffer's filename,
+--- and finally falls back to the configured `default_filename`
+--- (defaults to "untitled") for unnamed buffers.
+---@param override string?
+---@return string
+function M.resolve_filename(override)
+    if override and override ~= "" then
+        return override
+    end
+
+    local name = vim.fn.expand("%:t")
+    if name ~= "" then
+        return name
+    end
+
+    local config = require("gist").config or {}
+    return config.default_filename or "untitled"
 end
 
 function M.read_current_buffer_content()

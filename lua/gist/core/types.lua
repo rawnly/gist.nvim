@@ -6,3 +6,4 @@
 ---@class CreateContext
 ---@field description string?
 ---@field is_public boolean?
+---@field filename string?

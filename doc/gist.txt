@@ -9,7 +9,7 @@ SYNOPSIS
     :GistsList
 
 DESCRIPTION
-    The `:GistCreate` command creates a gist from the buffer selection or the entire buffer if no selection is made, using the configured platform's command-line tool.
+    The `:GistCreate` command creates a gist from the buffer selection or, if no range is given, from the full buffer contents (works on unnamed buffers too), using the configured platform's command-line tool.
     The `:GistCreateFromFile` command creates a gist from the current file using the configured platform's command-line tool.
     The `:GistsList` command lists all gists from your account on the configured platform and allows you to edit them (only supported on GitHub).
     
@@ -19,20 +19,24 @@ DESCRIPTION
     The plugin prompts you for a description and privacy settings for the gist creation (depending on the platform), and then copies the URL of the created gist to the system clipboard.
 
 OPTIONS
-    <description> You can provide description for the Gist as an argument to the command. If you don't provide a description, the plugin will prompt you for one.
-    public=true You can override the privacy settings for the Gist as an argument to the command. If you don't provide privacy settings, the plugin will prompt you for them.
+    Both `:GistCreate` and `:GistCreateFromFile` accept multiple `key=value` arguments, in any order:
+
+    description=<text>  Description for the gist. If omitted, the plugin will prompt for one (when prompts are enabled).
+    public=true|false   Override the privacy setting. If omitted, the plugin uses the configured default or prompts.
+    filename=<name>     Override the filename used for the gist. If omitted, the current buffer's filename is used; for unnamed buffers it falls back to the configured `default_filename` ("untitled" by default).
 
 EXAMPLES
     To create a gist from the current file, run the following command in Neovim:
 
-        :GistCreateFromFile [description] [public=true]
+        :GistCreateFromFile description=hello public=true filename=snippet.lua
 
     The plugin will prompt you for a description and privacy settings for the gist (depending on the platform).
     After you enter the description and privacy settings, the plugin will ask for confirmation and create the gist using the configured platform's command-line tool and copy the URL of the created gist to the system clipboard.
 
-    To create a gist from current selection or the entire buffer if no selection is made, run the following command in Neovim:
+    To create a gist from the current selection or, if no range is given, the full buffer contents (including unnamed buffers):
 
-        :GistCreate [description] [public=true]
+        :GistCreate description=hello public=true filename=snippet.lua
+        :'<,'>GistCreate filename=excerpt.lua
 
 SEE ALSO
     :help gist.config

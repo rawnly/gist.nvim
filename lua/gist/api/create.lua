@@ -43,33 +43,32 @@ local function create(content, ctx)
     vim.fn.setreg(config.clipboard, url)
 end
 
---- Creates a Gist from the current selection
+--- Creates a Gist from the current buffer or selection.
 function M.from_buffer(opts)
-    local content = nil
     local args = utils.parseArgs(opts.args)
+    local content
 
-    local start_line = opts.line1
-    local end_line = opts.line2
-    local description = opts.fargs[1]
-
-    if start_line ~= end_line then
-        content = utils.get_current_selection(start_line, end_line)
+    if opts.range and opts.range > 0 then
+        content = utils.get_current_selection(opts.line1, opts.line2)
+    else
+        content = utils.read_current_buffer_content()
     end
 
     return create(content, {
-        description = description,
+        description = args.description,
         is_public = args.public,
+        filename = args.filename,
     })
 end
 
 --- Creates a Gist from the current file.
 function M.from_file(opts)
     local args = utils.parseArgs(opts.args)
-    local description = opts.fargs[1]
 
     create(nil, {
-        description = description,
+        description = args.description,
         is_public = args.public,
+        filename = args.filename,
     })
 end
 

@@ -4,6 +4,7 @@ local gitlab = require("gist.core.gitlab")
 local sourcehut = require("gist.core.sourcehut")
 local x0 = require("gist.core.0x0")
 local pastecn = require("gist.core.pastecn")
+local utils = require("gist.core.utils")
 local gist = require("gist")
 
 local M = {}
@@ -122,7 +123,7 @@ function M.get_create_details(ctx)
     else
         --- @type Gist.Prompts.Create
         local prompts = gist.config.prompts.create
-        local filename = vim.fn.expand("%:t")
+        local filename = utils.resolve_filename(ctx.filename)
 
         local description = ""
         if prompts.description then

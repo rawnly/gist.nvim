@@ -81,7 +81,7 @@ function M.get_create_details(ctx)
     ---@type Gist.Prompts.Create
     local prompts = gist.config.prompts.create
 
-    local filename = vim.fn.expand("%:t")
+    local filename = utils.resolve_filename(ctx.filename)
 
     local description = ""
     if prompts.description then

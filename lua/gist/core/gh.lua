@@ -39,9 +39,9 @@ function M.create(filename, content, description, private)
         cmd = string.format(
             "%s gist create %s %s --filename %s -d %s",
             base_cmd,
-            vim.fn.expand("%"),
+            vim.fn.shellescape(vim.fn.expand("%")),
             public_flag,
-            filename,
+            vim.fn.shellescape(filename),
             description
         )
     end
@@ -167,7 +167,7 @@ function M.get_create_details(ctx)
     ---@type Gist.Prompts.Create
     local prompts = config.prompts and config.prompts.create or {}
 
-    local filename = vim.fn.expand("%:t")
+    local filename = utils.resolve_filename(ctx.filename)
     local description = ""
     if prompts.description then
         description = ctx.description

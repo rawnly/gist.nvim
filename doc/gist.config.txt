@@ -14,6 +14,7 @@ DESCRIPTION
 OPTIONS
 	platform = "github", sets the default platform to use. values: ["github" | "gitlab" | "termbin" | "sourcehut"]. default "github".
 	clipboard = "+", will set the clipboard to `+` by default, it is the unnamed_plus register `:h quoteplus`.
+	default_filename = "untitled", filename used when the current buffer has no name (unnamed buffers). default "untitled".
 	prompts = {
         create = {
             private = false, prompt for private/public when creating a gist. default false.

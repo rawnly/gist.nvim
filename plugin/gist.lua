@@ -1,7 +1,7 @@
 local gist = require("gist.api")
 
 local complete = function()
-    return { "description=", "public=" }
+    return { "description=", "public=", "filename=" }
 end
 
 vim.api.nvim_create_user_command("GistCreate", function(args)

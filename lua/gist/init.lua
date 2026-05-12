@@ -49,6 +49,7 @@ end
 ---@field clipboard string?
 ---@field split_direction "horizontal" | "vertical" | nil
 ---@field platform Gist.Platform | nil
+---@field default_filename string?
 ---@field prompts { create: Gist.Prompts.Create? }?
 ---@field platforms { github: Gist.Platforms.Github?, gitlab: Gist.Platforms.Gitlab?, termbin: Gist.Platforms.Termbin?, ['0x0']: Gist.Platforms.0x0?, sourcehut: Gist.Platforms.Sourcehut?, pastecn: Gist.Platforms.Pastecn? }?
 ---@field list { use_multiplexer: boolean?, mappings: { next_file: string?, prev_file: string? } }?
@@ -58,6 +59,7 @@ local defaults = {
     clipboard = "+",
     split_direction = "vertical",
     platform = "github", -- Default backend to use
+    default_filename = "untitled", -- Filename used when the buffer has no name
     prompts = {
         create = {
             private = false, -- Prompt for private/public when creating an entry

@@ -64,16 +64,30 @@ To create a gist from the current file, use the `:GistCreateFromFile` command in
 The plugin will prompt you for a description and whether the gist should be private or public (depending on the platform).
 
 ```vim
-  :GistCreate [description] [public=true]
+  :GistCreate [description=...] [public=true] [filename=...]
 ```
 
-- `:GistCreate` will create the gist from the current selection or the entire buffer if no selection is made
-- `:GistCreateFromFile` will create the gist from the current file
+- `:GistCreate` will create the gist from the current selection or, if no range is given, from the full buffer contents — including unnamed buffers
+- `:GistCreateFromFile` will create the gist from the current file on disk
 
-Both commands accept the same options: `[description=]` and `[public=true]`
+Both commands accept the same `key=value` options, which can be combined freely:
 
-If you don't pass the `description` it will prompt to insert one later.
-If you pass `[public=true]` it won't prompt for privacy later.
+| Option         | Description                                                                                                            |
+| -------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| `description=` | Description for the gist. If omitted, you will be prompted (when prompts are enabled).                                 |
+| `public=`      | `true` or `false`. Overrides the configured privacy default and skips the privacy prompt.                              |
+| `filename=`    | Filename used for the gist. Defaults to the current buffer's filename, falling back to `default_filename` (`untitled` by default) for unnamed buffers. |
+
+Values containing spaces can be wrapped in single or double quotes (e.g. `description="quick note"`).
+
+Examples:
+
+```vim
+  :GistCreate filename=note.md
+  :GistCreate description=todo public=false
+  :GistCreate description="quick note" public=true filename=note.md
+  :GistCreate description='release notes for v1.2.0' filename=CHANGELOG.md
+```
 
 After you enter the description and privacy settings, the plugin will ask for confirmation and create the gist using the configured platform's tool, then copy the gist's URL to the given clipboard registry.
 
@@ -94,6 +108,7 @@ You can also list your gists and edit their files on the fly (GitHub only).
     require("gist").setup({
         platform = "github", -- Default platform: "github", "gitlab", "termbin", or "sourcehut"
         clipboard = "+", -- The registry to use for copying the gist URL
+        default_filename = "untitled", -- Filename used when the current buffer has no name
         prompts = {
             create = {
                 private = false,      -- Prompt for private/public when creating a gist

@@ -52,7 +52,7 @@ end
 ---@field default_filename string?
 ---@field prompts { create: Gist.Prompts.Create? }?
 ---@field platforms { github: Gist.Platforms.Github?, gitlab: Gist.Platforms.Gitlab?, termbin: Gist.Platforms.Termbin?, ['0x0']: Gist.Platforms.0x0?, sourcehut: Gist.Platforms.Sourcehut?, pastecn: Gist.Platforms.Pastecn? }?
----@field list { use_multiplexer: boolean?, mappings: { next_file: string?, prev_file: string? } }?
+---@field list { mappings: { next_file: string?, prev_file: string? } }?
 
 ---@type Gist.Config
 local defaults = {
@@ -73,8 +73,8 @@ local defaults = {
             private = false,
             cmd = "gh",
             list = {
-                limit = nil, -- Limit the number of gists fetched (default: nil, uses gh default of 10)
-                read_only = false, -- Opens the given gists in read-only buffers. This option is ignored if use_multiplexer is `false`
+                limit = nil, -- Gists fetched per page, max 100 (default: nil, 30). More pages load on demand
+                read_only = false, -- Opens the given gists in read-only buffers
             },
         },
         gitlab = {
@@ -99,7 +99,6 @@ local defaults = {
         },
     },
     list = {
-        use_multiplexer = true, -- Use terminal multiplexer (tmux/zellij) if detected
         mappings = {
             next_file = "<C-n>",
             prev_file = "<C-p>",

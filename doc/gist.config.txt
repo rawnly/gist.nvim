@@ -8,8 +8,8 @@ DESCRIPTION
     you can also type to fuzzy find them.
     The mappings can be customized with the `config.list.mappings.{next_file, prev_file}` via the `setup()` function.
     
-    When `list.use_multiplexer` is enabled, the plugin will automatically detect tmux or zellij and open gists in new multiplexer tabs.
-    If no multiplexer is detected, gists are opened in read-only Neovim buffers for viewing.
+    Selected gists are opened in a new tab, one buffer per file. Saving a buffer pushes the file back to the gist.
+    When `read_only` is enabled the buffers are not modifiable.
 
 OPTIONS
 	platform = "github", sets the default platform to use. values: ["github" | "gitlab" | "termbin" | "sourcehut"]. default "github".
@@ -28,8 +28,8 @@ OPTIONS
             private = false, sets the privacy to `public` by default for GitHub.
             cmd = "gh", allows the specification of gh wrappers which handle auth, etc. defaults to "gh".
             list = {
-                limit = nil, limits the number of gists fetched. default nil (uses gh default of 10).
-                read_only = false, opens gists in read-only buffers. ignored if use_multiplexer is false. default false.
+                limit = nil, gists fetched per page, max 100. more pages load on demand. default nil (30).
+                read_only = false, opens gists in read-only buffers. default false.
             },
         },
         gitlab = {
@@ -53,7 +53,6 @@ OPTIONS
         },
     },
 	list = {
-        use_multiplexer = true, enables terminal multiplexer support (tmux/zellij) for editing gists. default true.
         mappings = {
             next_file = "<C-n>",
             prev_file = "<C-p>",

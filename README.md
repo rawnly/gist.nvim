@@ -24,8 +24,6 @@ Depending on the platform you want to use:
 - [**0x0.st**](https://0x0.st): No additional tools required, as it uses direct HTTP requests (curl).
 - [PasteCN](https://pastecn.com): No additional tools required, as it uses direct HTTP requests (curl).
 
-If you intend to use the `GistsList` command to list and edit all your gists (GitHub only), I suggest the `nvim-unception` plugin.
-
 
 Once you have Neovim and gh installed, you can install `gist.nvim` using your favorite plugin manager.
 
@@ -36,14 +34,6 @@ return {
     "Rawnly/gist.nvim",
     cmd = { "GistCreate", "GistCreateFromFile", "GistsList" },
     config = true
-  },
-  -- `GistsList` opens the selected gist in a terminal buffer,
-  -- nvim-unception uses neovim remote rpc functionality to open the gist in an actual buffer
-  -- and prevents neovim buffer inception
-  {
-    "samjwill/nvim-unception",
-    lazy = false,
-    init = function() vim.g.unception_block_while_host_edits = true end
   }
 }
 ```
@@ -51,10 +41,7 @@ return {
 ```lua
 use {
   "rawnly/gist.nvim",
-  config = function() require("gist").setup() end,
-  -- `GistsList` opens the selected gif in a terminal buffer,
-  -- this plugin uses neovim remote rpc functionality to open the gist in an actual buffer and not have buffer inception
-  requires = { "samjwill/nvim-unception", setup = function() vim.g.unception_block_while_host_edits = true end }
+  config = function() require("gist").setup() end
 }
 ```
 
@@ -95,10 +82,10 @@ You can also list your gists and edit their files on the fly (GitHub only).
 ```vim
     :GistsList
 ```
-- `:GistsList` will list all your gists and after you select one it will:
-  - If `use_multiplexer` is enabled and a multiplexer (tmux/zellij) is detected: opens the gist in a new multiplexer tab using `gh gist edit`
-  - Otherwise: opens the gist in a new tab with read-only content using `gh gist view -r`
-  - The default editor for modifying gists is configured as part of the gh cli usually in `~/.config/gh/config.yaml' or the system default
+- `:GistsList` lists your gists a page at a time (select `… load more` for the next page) and after you select one it will:
+  - Open the gist in a new tab, one buffer per file (`list.mappings.next_file` / `prev_file` cycle through them)
+  - Saving a buffer with `:w` pushes the file back to the gist using `gh gist edit`
+  - With `read_only = true` the buffers are not modifiable and nothing is pushed
 
 ## Configuration
 
@@ -121,8 +108,8 @@ You can also list your gists and edit their files on the fly (GitHub only).
                 private = false, -- All GitHub gists will be public by default
                 cmd = "gh",     -- Command for GitHub CLI
                 list = {
-                    limit = nil,       -- Limit the number of gists fetched (default: nil, uses gh default of 10)
-                    read_only = false, -- Opens gists in read-only buffers. Ignored if use_multiplexer is false
+                    limit = nil,       -- Gists fetched per page, max 100 (default: nil, 30). More pages load on demand
+                    read_only = false, -- Opens gists in read-only buffers
                 },
             },
             gitlab = {
@@ -164,14 +151,6 @@ For GitLab, `cmd` defaults to `glab`.
 For PasteCN, Termbin and 0x0, no command is needed as it uses direct HTTP.
 
 For SourceHut, `cmd` defaults to `hut`.
-
-### Multiplexer Support
-
-When `list.use_multiplexer` is set to `true`, the plugin will automatically detect if you're running inside a terminal multiplexer:
-- **tmux**: Opens gists in a new tmux window using `tmux new-window`
-- **zellij**: Opens gists in a new zellij tab using `zellij run -i -c`
-
-If no multiplexer is detected, gists will be opened in read-only Neovim buffers for viewing.
 
 ## License
 

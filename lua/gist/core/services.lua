@@ -49,6 +49,7 @@ end
 --- Fetch the content of a gist
 --
 -- @param hash string The hash/ID of the gist
+-- @param filename string|nil The file to fetch
 -- @return string|nil The content of the gist
 function M.fetch_content(...)
     local platform = get_platform()
@@ -74,30 +75,63 @@ function M.format(...)
     end
 end
 
---- Get the command to edit a gist
+--- List the file names of a gist
 --
--- @param hash string The hash/ID of the gist to edit
--- @return table|nil Command array for editing the gist
-function M.get_edit_cmd(...)
+-- @param hash string The hash/ID of the gist
+-- @return string[]|nil The file names
+function M.list_files(...)
     local platform = get_platform()
 
     if platform == "github" then
-        return gh.get_edit_cmd(...)
+        return gh.list_files(...)
     else
         return nil
     end
 end
 
---- List gists from the configured platform
+--- Replace the content of a file in an existing gist
 --
--- @return table|nil Array of gist information tables
-function M.list()
+-- @param hash string The hash/ID of the gist
+-- @param filename string The file to replace
+-- @param content string The new content
+-- @return boolean Whether the update succeeded
+-- @return string|nil Error message
+function M.update(...)
     local platform = get_platform()
 
     if platform == "github" then
-        return gh.list()
+        return gh.update(...)
+    else
+        return false, "Platform " .. platform .. " does not support editing"
+    end
+end
+
+--- List gists from the configured platform
+--
+-- @param page number|nil The page to fetch, starting at 1
+-- @return table|nil Array of gist information tables
+-- @return number|nil The page size
+function M.list(...)
+    local platform = get_platform()
+
+    if platform == "github" then
+        return gh.list(...)
     else
         return nil
+    end
+end
+
+--- List a page of gists without blocking
+--
+-- @param page number The page to fetch, starting at 1
+-- @param callback function Called with the gists, or nil on failure
+function M.list_async(page, callback)
+    local platform = get_platform()
+
+    if platform == "github" then
+        gh.list_async(page, callback)
+    else
+        callback(nil)
     end
 end
 

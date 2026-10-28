@@ -13,8 +13,8 @@ DESCRIPTION
     The `:GistCreateFromFile` command creates a gist from the current file using the configured platform's command-line tool.
     The `:GistsList` command lists all gists from your account on the configured platform and allows you to edit them (only supported on GitHub).
     
-    When `list.use_multiplexer` is enabled and a multiplexer (tmux/zellij) is detected, gists are opened in new multiplexer tabs.
-    Otherwise, gists are opened in read-only Neovim buffers for viewing.
+    Selected gists are opened in a new tab, one buffer per file. Saving a buffer pushes the file back to the gist.
+    When `read_only` is enabled the buffers are not modifiable.
 
     The plugin prompts you for a description and privacy settings for the gist creation (depending on the platform), and then copies the URL of the created gist to the system clipboard.
 
